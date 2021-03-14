@@ -46,6 +46,7 @@ export class CategoryService {
     return data;
   }
 
+  //added by Kibria
   async getAttributeByCategoryId(id: number): Promise<any> {
     const attrDtl = await this.attributeModel.find({ categoryId: id });   
 

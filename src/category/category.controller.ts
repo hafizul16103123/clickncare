@@ -39,6 +39,7 @@ export class CategoryController {
     return this.categoryService.showList(category_id);
   }
 
+  //added by Kibria
   @ApiTags('Get Category Attribute')
   @ApiQuery({ name: 'categoryId' })
   @Get('getAttribute')
