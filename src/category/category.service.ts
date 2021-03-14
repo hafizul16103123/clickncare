@@ -45,4 +45,26 @@ export class CategoryService {
     console.log(data);
     return data;
   }
+
+  async getAttributeByCategoryId(id: number): Promise<any> {
+    const attrDtl = await this.attributeModel.find({ categoryId: id });   
+
+    const attr = attrDtl[0].attribute.data.filter(e=> e.required == true); 
+    let attribute = [];   
+
+    attr.map((p) => {    
+         const attrItems = {
+             attributeName: p.label,
+             uiType: p.uiType,
+             placeholder: p.placeholder,
+             attributeValues: p.dataSource
+         }
+
+         attribute.push(attrItems);
+    });
+
+    return attribute;
+  }
+
+
 }

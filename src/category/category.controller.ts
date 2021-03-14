@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AttributeData } from './dto/create-category.dto';
 import * as fs from 'fs';
 import { InjectModel } from 'nestjs-typegoose';
@@ -37,6 +37,13 @@ export class CategoryController {
   @Post('attribute-list/:category_id')
   async showList(@Query('category_id') category_id: number) {
     return this.categoryService.showList(category_id);
+  }
+
+  @ApiTags('Get Category Attribute')
+  @ApiQuery({ name: 'categoryId' })
+  @Get('getAttribute')
+  async attribute(@Query('categoryId') category_id: number): Promise<any> {
+    return this.categoryService.getAttributeByCategoryId(category_id);
   }
 
   @ApiTags('Test')
