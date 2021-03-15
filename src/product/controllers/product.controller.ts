@@ -14,9 +14,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { CreateProductDto } from '../dto/create-product.dto';
 import { Product } from '../entities/product.entity';
 import { IPaginatedData } from 'src/utils/paginate';
-import { User, UserGuard } from '@zaynax-limited/z-auth';
 import csv from 'csv-parser';
 import * as fs from 'fs';
+import { User } from 'src/auth/user/user.decorator';
+import { UserGuard } from 'src/auth/user/user.guard';
 // import fs from fs;
 // const csv = require('csv-parser');
 // const fs = require('fs');
@@ -39,7 +40,7 @@ export class ProductController {
   }
 
   // only 1, 2, 3 will work
-  // @UseGuards(UserGuard)
+  @UseGuards(UserGuard)
   @Get('single')
   async getProduct(
     @Query('productId') id: number,
