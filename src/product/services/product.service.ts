@@ -906,8 +906,6 @@ export class ProductService {
       };
     });
 
-    console.log(data.color);
-
     const color = [];
     const size = [];
     const price = [];

@@ -39,13 +39,13 @@ export class ProductController {
   }
 
   // only 1, 2, 3 will work
-  @UseGuards(UserGuard)
+  // @UseGuards(UserGuard)
   @Get('single')
   async getProduct(
     @Query('productId') id: number,
     @User() user: string,
   ): Promise<Product> {
-    console.log('user ' + user);
+    console.log('user1 ' + user);
 
     return this.productService.getSingleProduct(id);
   }
