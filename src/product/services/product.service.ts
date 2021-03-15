@@ -966,4 +966,106 @@ export class ProductService {
 
     return varient;
   }
+
+  async getVarientBySKU(globalSKU: string, productID: number) {
+    const data = await this.productModel.findOne({
+      productID: productID
+    });
+   const varientData = data.priceStock.filter(e=> e.globalSKU == globalSKU);
+   
+  // return varientData;
+  
+    let cl = [];
+    data.color.forEach((e, index) => {
+      if(varientData[0].color == e){
+        cl.push({ propertyValueId: index,
+          propertyName: e,
+          image: {
+            large: '',
+            small: '',
+          }
+        });
+      }
+    });
+
+    let sz = [];
+    data.size.forEach((e, index) => {
+      if(varientData[0].size == e){
+        sz.push({
+          propertyValueId: index,
+          propertyName: e,
+        });
+      }
+    });
+
+    const color = [];
+    const size = [];
+    const price = [];
+
+    for (let index = 0; index < data.priceStock.length; index++) {
+      const main = data.priceStock[index];
+
+      if(main.globalSKU == globalSKU){
+
+        for (let index = 0; index < cl.length; index++) {
+          const element = cl[index];
+          element.image.large = main.image;
+          element.image.small = main.smallImage;
+  
+          for (let index = 0; index < sz.length; index++) {
+            const element1 = sz[index];
+  
+            if (main.color == element.propertyName) {
+              if (main.size == element1.propertyName) {
+                color.push({
+                  availability: true,
+                  propertyValueDefinitionName: element.propertyName,
+                  propertyValueDisplayName: element.propertyName,
+                  skuColorValue: element.propertyName,
+                  propertyValueId: index,
+                  skuPropertyImagePath: main.image,
+                });
+  
+                size.push({
+                  availability: true,
+                  propertyValueDefinitionName: element1.propertyName,
+                  propertyValueDisplayName: element1.propertyName,
+                  skuColorValue: element1.propertyName,
+                  propertyValueId: index,
+                });
+  
+                price.push({
+                  skuPropIds:
+                    element.propertyValueId + ',' + element1.propertyValueId,
+                  globalSKU: main.globalSKU,
+                  skuVal: {
+                    actSkuCalPrice: main.price,
+                    price: main.price,
+                    availQuantity: main.quantity,
+                    isActivity: true,
+                  },
+                });
+              }
+            }
+          }
+        }
+        
+      }
+
+      
+    }
+
+    const varient = {
+      color: color,
+      size: size,
+      price: price,
+      skuBase: { color: cl, size: sz },
+    };
+
+    return varient;
+  }
+
+  
+
+
 }

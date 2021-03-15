@@ -89,4 +89,10 @@ export class ProductController {
   async single2(@Query('productID') productID: number) {
     return this.productService.single2(productID);
   }
+
+  @Get('/getVarientBySKU')
+  async getVarientBySKU(@Query('productID') productID: number, @Query('globalSKU') globalSKU: string) {
+    return this.productService.getVarientBySKU(globalSKU, productID);
+  }
+
 }
