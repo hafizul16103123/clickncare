@@ -111,4 +111,11 @@ export class ProductInfoMicroServiceController {
   async getDeliveryCharge(data: ChangeDeliveryLocatiob): Promise<any> {
     return await this.deliveryLocationService.changeDeliveryLocation(data);
   }
+
+  // get attribute by GlobalSKU
+  @MessagePattern({ cmd: 'PUBLIC_GET_ATTRIBUTE_BY_GLOBALSKU' })
+  async getAttributeInfo({ globalSKU, productID }): Promise<any> {
+    console.log(globalSKU, productID);
+    return await this.productService.getVarientBySKU(globalSKU, productID);
+  }
 }

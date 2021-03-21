@@ -6,7 +6,7 @@ import {
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
-
+import { TransformInterceptor } from './utils/response/response';
 import config from './configuration';
 import { AllExceptionsFilter } from './utils/response/exception';
 
@@ -31,9 +31,14 @@ async function bootstrap() {
   await app.startAllMicroservicesAsync();
   logger.log('Connected to Redis');
 
+  app.startAllMicroservices();
+  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalInterceptors(new TransformInterceptor());
+
   const options = new DocumentBuilder()
-    .setTitle('zDrop - Seller')
-    .setDescription('API documentation for zDrop - Seller Service')
+    .setTitle('zDrop - Product')
+    .setDescription('API documentation for zDrop - Product')
     .setVersion('1.0')
     .addBearerAuth({ name: 'token', type: 'http', scheme: 'bearer' })
     .build();

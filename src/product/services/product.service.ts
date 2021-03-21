@@ -134,15 +134,24 @@ export class ProductService {
       sizeTypeExist = true;
     }
 
-    data.varient = {
-      color: color,
-      size: {
-        ...(sizeTypeExist && { sizeType: data.sizeType }),
-        size,
+    //let attribute;
+
+    let m = [
+      {
+        name: 'color',
+        value: ['red', 'blue', 'green'],
       },
-      price: price,
-      skuBase: { color: cl, size: sz },
-    };
+      {
+        name: 'size',
+        value: ['41', '42', '43'],
+      },
+      {
+        name: 'capacity',
+        value: ['4 GB', '6 GB', '8 GB'],
+      },
+    ];
+
+    data.varient = m;
 
     // GET seller and inserting sellerID in product
     //const seller = await this.profileModel.findOne({ z_id: z_id });
@@ -779,6 +788,8 @@ export class ProductService {
       productID: id,
     });
 
+    return await this.getVarient2(data.productID);
+
     //seller
     const seller = await this.redis
       .send({ cmd: 'SELLER_ALL_INFO_BY_SELLERID' }, data.sellerID)
@@ -857,7 +868,7 @@ export class ProductService {
       preSaleModule: {
         preSale: false,
       },
-      skuModule: await this.getVarient(data.productID),
+      skuModule: await this.getVarient2(data.productID),
       sellerModule: {
         sellerID: data.sellerID,
         sellerName: seller.profile.shop_name,
@@ -880,9 +891,8 @@ export class ProductService {
       },
     };
 
-    return product;
+    return await this.getVarient2(data.productID);
   }
-
   async getVarient(productID: number) {
     const data = await this.productModel.findOne({
       productID: productID,
@@ -961,36 +971,145 @@ export class ProductService {
       color: color,
       size: size,
       price: price,
-      skuBase: { color: cl, size: sz },
+      skuBase: {
+        color: cl,
+        size: sz,
+      },
     };
 
     return varient;
   }
 
-  async getVarientBySKU(globalSKU: string, productID: number) {
+  async getVarient2(productID: number) {
     const data = await this.productModel.findOne({
-      productID: productID
+      productID: productID,
     });
-   const varientData = data.priceStock.filter(e=> e.globalSKU == globalSKU);
-   
-  // return varientData;
-  
-    let cl = [];
+
+    const attribute = [];
+
+    const arr = [];
+    let unique = [];
+    for (let index = 0; index < data.priceStock.length; index++) {
+      const main = data.priceStock[index];
+      // console.log(main.attribute);
+
+      for (let index1 = 0; index1 < main.attribute.length; index1++) {
+        const attr = main.attribute[index1];
+
+        if (!unique.includes(Object.values(attr).toString())) {
+          unique.push(Object.values(attr).toString());
+          arr.push({
+            index: index1,
+            propertyName: Object.keys(attr).toString(),
+            propertyValue: Object.values(attr).toString(),
+            price: main.price,
+            image: {
+              large: main.image,
+              small: main.smallImage,
+            },
+          });
+        }
+      }
+    }
+    // console.log(prI);
+
+    const propertyname = [];
+    const property = [];
+    let pr = '';
+    let pri = [];
+    for (let index = 0; index < arr.length; index++) {
+      const element = arr[index];
+      // console.log(element.index);
+      console.log(index);
+      pri.push(element.index);
+
+      pr = pr + ',' + index;
+      if (!propertyname.includes(element.propertyName)) {
+        propertyname.push(element.propertyName);
+
+        property.push({
+          index: index + '' + 1,
+          price: element.price,
+          propertyName: element.propertyName,
+          propertyValue: [],
+        });
+      }
+    }
+
+    // console.log(property);
+    // console.log(pri);
+
+    const price = [];
+    let i = '';
+    for (let index = 0; index < property.length; index++) {
+      const element = property[index];
+
+      for (let index1 = 0; index1 < arr.length; index1++) {
+        const element1 = arr[index1];
+        if (element.propertyName == element1.propertyName) {
+          // check it is color then add image
+
+          if (element.propertyName == 'color') {
+            element.propertyValue.push({
+              index: index1,
+              properValue: element1.propertyValue,
+              image: element1.image,
+            });
+          } else {
+            element.propertyValue.push({
+              index: index1,
+              properValue: element1.propertyValue,
+            });
+          }
+
+          // price push
+          price.push({
+            index: index1,
+            price: element1.price,
+          });
+        }
+      }
+    }
+
+    const result = [];
+    for (let index = 0; index < price.length; index++) {
+      const element = price[index];
+      result.push({ index: index + '' + element.index, price: element.price });
+    }
+    // console.log(property);
+
+    return { property, price, arr };
+  }
+
+  async getVarientBySKU(globalSKU: string, productID: number) {
+    // let varient;
+
+    const data = await this.productModel.findOne({
+      productID: productID,
+    });
+
+    const varientData = data.priceStock.filter((e) => e.globalSKU == globalSKU);
+    console.log(varientData);
+
+    // return varientData;
+
+    const cl = [];
     data.color.forEach((e, index) => {
-      if(varientData[0].color == e){
-        cl.push({ propertyValueId: index,
+      if (varientData[0].color == e) {
+        cl.push({
+          propertyValueId: index,
           propertyName: e,
           image: {
             large: '',
             small: '',
-          }
+          },
         });
       }
     });
 
-    let sz = [];
+    const sz = [];
     data.size.forEach((e, index) => {
-      if(varientData[0].size == e){
+      if (varientData[0].size == e) {
         sz.push({
           propertyValueId: index,
           propertyName: e,
@@ -1005,16 +1124,15 @@ export class ProductService {
     for (let index = 0; index < data.priceStock.length; index++) {
       const main = data.priceStock[index];
 
-      if(main.globalSKU == globalSKU){
-
+      if (main.globalSKU == globalSKU) {
         for (let index = 0; index < cl.length; index++) {
           const element = cl[index];
           element.image.large = main.image;
           element.image.small = main.smallImage;
-  
+
           for (let index = 0; index < sz.length; index++) {
             const element1 = sz[index];
-  
+
             if (main.color == element.propertyName) {
               if (main.size == element1.propertyName) {
                 color.push({
@@ -1025,7 +1143,7 @@ export class ProductService {
                   propertyValueId: index,
                   skuPropertyImagePath: main.image,
                 });
-  
+
                 size.push({
                   availability: true,
                   propertyValueDefinitionName: element1.propertyName,
@@ -1033,7 +1151,7 @@ export class ProductService {
                   skuColorValue: element1.propertyName,
                   propertyValueId: index,
                 });
-  
+
                 price.push({
                   skuPropIds:
                     element.propertyValueId + ',' + element1.propertyValueId,
@@ -1049,11 +1167,17 @@ export class ProductService {
             }
           }
         }
-        
       }
-
-      
     }
+
+    // varient.color = color;
+    // varient.size = size;
+    // varient.price = price;
+    // varient.skuBase = { color: cl, size: sz };
+
+    // if (color.length == 0) {
+    //   varient.globalQuantity = data.priceStock[0].quantity;
+    // }
 
     const varient = {
       color: color,
@@ -1062,10 +1186,23 @@ export class ProductService {
       skuBase: { color: cl, size: sz },
     };
 
+    if (cl.length == 0) {
+      return {
+        color: color,
+        size: size,
+        price: price,
+        global: {
+          globalSKU: data.priceStock[0].globalSKU,
+          globalStock: data.priceStock[0].quantity,
+          smallImage: data.priceStock[0].smallImage,
+        },
+        skuBase: {
+          color: cl,
+          size: sz,
+        },
+      };
+    }
+
     return varient;
   }
-
-  
-
-
 }

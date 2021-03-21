@@ -18,6 +18,7 @@ import csv from 'csv-parser';
 import * as fs from 'fs';
 import { User } from 'src/auth/user/user.decorator';
 import { UserGuard } from 'src/auth/user/user.guard';
+import { UserOptionalGuard } from 'src/auth/user/user.optional.guard';
 // import fs from fs;
 // const csv = require('csv-parser');
 // const fs = require('fs');
@@ -40,7 +41,7 @@ export class ProductController {
   }
 
   // only 1, 2, 3 will work
-  @UseGuards(UserGuard)
+  @UseGuards(UserOptionalGuard)
   @Get('single')
   async getProduct(
     @Query('productId') id: number,
@@ -89,10 +90,4 @@ export class ProductController {
   async single2(@Query('productID') productID: number) {
     return this.productService.single2(productID);
   }
-
-  @Get('/getVarientBySKU')
-  async getVarientBySKU(@Query('productID') productID: number, @Query('globalSKU') globalSKU: string) {
-    return this.productService.getVarientBySKU(globalSKU, productID);
-  }
-
 }

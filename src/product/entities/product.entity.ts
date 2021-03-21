@@ -45,6 +45,9 @@ export class PriceStock {
   price: number;
 
   @Prop()
+  attribute: any;
+
+  @Prop()
   quantity: number;
 
   @Prop()

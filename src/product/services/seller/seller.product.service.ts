@@ -125,4 +125,10 @@ export class SellerProductService {
 
     return finaldata;
   }
+
+  async sellerProductCount(sellerID: string) {
+    return await this.productModel.countDocuments({
+      sellerID: sellerID,
+    });
+  }
 }

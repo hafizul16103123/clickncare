@@ -42,4 +42,9 @@ export class SellerProductMicroServiceController {
       pageNum,
     );
   }
+
+  @MessagePattern({ cmd: 'SELLER_PRODUCT_COUNT' })
+  async sellerProductCount(sellerID: string): Promise<any> {
+    return await this.sellerProductService.sellerProductCount(sellerID);
+  }
 }

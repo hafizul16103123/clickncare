@@ -50,6 +50,9 @@ export class PriceStock {
   price: number;
 
   @ApiProperty()
+  attribute: any;
+
+  @ApiProperty()
   quantity: number;
 
   @ApiProperty()
@@ -82,7 +85,7 @@ export class CreateProductDto {
   // @Transform((value: any) => mongoose.Types.ObjectId(value))
   categoryId: Ref<Category>;
 
-  @ApiHideProperty()
+  @ApiProperty()
   varient: any;
 
   @ApiProperty()

@@ -8,6 +8,7 @@ import { Category } from './entities/category.entity';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { Attribute } from './entities/attribute.entity';
 
+@ApiTags('Category')
 @Controller('category')
 export class CategoryController {
   constructor(
@@ -18,8 +19,8 @@ export class CategoryController {
     private readonly attributeModel: ReturnModelType<typeof Attribute>,
   ) {}
 
-  @ApiTags('All category Example parent id 0')
-  @Get('category/:parent_id')
+  @ApiTags('All category input parent id (Example 1)')
+  @Get('')
   async mainCategory(@Query('parent_id') parent_id: number) {
     return this.categoryService.category(parent_id);
   }
