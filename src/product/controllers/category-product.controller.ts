@@ -1,5 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Attribute_FilterDTO } from '../dto/attribute_filter.dto';
 import { Product } from '../entities/product.entity';
 import { CategoryProductService } from '../services/category-product.service';
 
@@ -32,4 +33,11 @@ export class ProductCategoryController {
       +page,
     );
   }
+
+  @Post('getCategoryLeftFilter')
+  @ApiQuery({name: 'categoryId', type: Number})
+  async getCategoryLeftFilter(@Query("categoryId") categoryId: number, @Body() data: Attribute_FilterDTO) {
+      return await this.categorProductService.getCategoryLeftFilter(categoryId, data);
+  }
+
 }
