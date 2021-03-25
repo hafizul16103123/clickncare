@@ -49,7 +49,7 @@ export class CategoryService {
   async getAttributeByCategoryId(id: number): Promise<any> {
     const attrDtl = await this.attributeModel.find({ categoryId: id });
 
-    const attr = attrDtl[0].attribute.data;//.filter((e) => e.required == true);
+    const attr = attrDtl[0].attribute.data.filter((e) => e.required == true);
     let attribute = [];
 
     attr.map((p) => {
