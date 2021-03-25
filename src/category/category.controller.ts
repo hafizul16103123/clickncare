@@ -25,22 +25,6 @@ export class CategoryController {
     return this.categoryService.category(parent_id);
   }
 
-  @ApiTags('Attribute store')
-  @Post('attribute/:category_id')
-  async importAttribute(
-    @Body() data: AttributeData,
-    @Query('category_id') category_id: number,
-  ) {
-    return this.categoryService.importAttribute(category_id, data);
-  }
-
-  @ApiTags('Show submitted attribute')
-  @Post('attribute-list/:category_id')
-  async showList(@Query('category_id') category_id: number) {
-    return this.categoryService.showList(category_id);
-  }
-
-  //added by Kibria
   @ApiTags('Get Category Attribute')
   @ApiQuery({ name: 'categoryId' })
   @Get('getAttribute')
@@ -53,11 +37,9 @@ export class CategoryController {
   async test() {
     // const read = fs.readFileSync('src/category/attribute');
     // fs.readdirSync('./attribute');
-    const fileName = fs.readdirSync('src/category/attribute/out');
+    const fileName = fs.readdirSync('src/category/out');
     fileName.map(async (e) => {
-      const read = fs
-        .readFileSync('src/category/attribute/out/' + e)
-        .toString();
+      const read = fs.readFileSync('src/category/out/' + e).toString();
       const data = JSON.parse(read);
       // console.log(data.data[7].dataSource);
 
@@ -71,12 +53,18 @@ export class CategoryController {
         categoryId: dataBaseCat.categoryId,
       });
 
-      if (attribute == null) {
-        await this.attributeModel.create({
-          categoryId: dataBaseCat.categoryId,
-          attribute: data.data[7].dataSource,
-          name: dataBaseCat.categoryName,
-        });
+      if (attribute != null) {
+        const attr = [];
+        for (let index = 0; index < data.data.length; index++) {
+          const element = data.data[index];
+          if (element.group == 'sale') {
+            attr.push(element);
+          }
+        }
+
+        attribute.response = attr;
+
+        attribute.save();
       }
     });
   }

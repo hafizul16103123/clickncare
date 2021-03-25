@@ -11,6 +11,28 @@ export class ProductSpecification {
   value: string;
 }
 
+class PackageWeight {
+  @Prop()
+  weight: string;
+
+  @Prop({ enum: ['g', 'kg'] })
+  weightType: string;
+}
+
+class PackageDimentions {
+  @Prop()
+  length: number;
+
+  @Prop()
+  width: number;
+
+  @Prop()
+  height: number;
+
+  @Prop()
+  dimentionType: string;
+}
+
 export class ServiceDelivery {
   @Prop()
   warrentyType?: string;
@@ -22,10 +44,10 @@ export class ServiceDelivery {
   warrentyPolicy?: string;
 
   @Prop()
-  packageWeight?: string;
+  packageWeight?: PackageWeight;
 
   @Prop()
-  packageDimentions?: string;
+  packageDimentions?: PackageDimentions;
 
   @Prop()
   dangerousGood?: string;
@@ -46,6 +68,9 @@ export class PriceStock {
 
   @Prop()
   attribute: any;
+
+  @Prop()
+  discount: number;
 
   @Prop()
   quantity: number;
@@ -113,6 +138,9 @@ export class Product extends TimeStamps {
 
   @Prop()
   priceStock: PriceStock[];
+
+  @Prop()
+  hsnCode: string;
 
   @Prop({ default: 'pending' })
   status: string;

@@ -41,15 +41,9 @@ export class ProductController {
   }
 
   // only 1, 2, 3 will work
-  @UseGuards(UserOptionalGuard)
   @Get('single')
-  async getProduct(
-    @Query('productId') id: number,
-    @User() user: string,
-  ): Promise<Product> {
-    console.log('user1 ' + user);
-
-    return this.productService.getSingleProduct(id);
+  async getProduct(@Query('productId') id: number): Promise<Product> {
+    return this.productService.single(id);
   }
 
   @Put('update-product/:productId')
@@ -86,8 +80,8 @@ export class ProductController {
       });
   }
 
-  @Get('/single2:productID')
+  @Get('/single2')
   async single2(@Query('productID') productID: number) {
-    return this.productService.single2(productID);
+    return this.productService.single(productID);
   }
 }

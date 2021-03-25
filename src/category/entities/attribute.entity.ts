@@ -10,4 +10,10 @@ export class Attribute extends TimeStamps {
 
   @Prop()
   name: string;
+
+  @Prop()
+  response: any;
+
+  @Prop()
+  data: any;
 }

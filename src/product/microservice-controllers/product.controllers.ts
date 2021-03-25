@@ -28,7 +28,7 @@ export class ProductInfoMicroServiceController {
 
   @MessagePattern({ cmd: 'PUBLIC_SINGLE_PRODUCT_INFO' })
   async getSingleProduct(id): Promise<any> {
-    return await this.productService.getSingleProduct(id);
+    return await this.productService.single(id);
   }
 
   // category base product
@@ -40,6 +40,8 @@ export class ProductInfoMicroServiceController {
     minPrice,
     maxPrice,
     pageNum = 1,
+    searchKey,
+    sortBy,
   }): Promise<any> {
     return await this.productCategoryService.productsByCategory(
       id,
@@ -48,6 +50,8 @@ export class ProductInfoMicroServiceController {
       minPrice,
       maxPrice,
       pageNum,
+      searchKey,
+      sortBy,
     );
   }
 
@@ -78,14 +82,34 @@ export class ProductInfoMicroServiceController {
     return await this.productService.productsBySKU({ productID, globalSKU });
   }
 
-  // public profile seller product
-  @MessagePattern({ cmd: 'GET_STORE_HOMEPAGE' })
-  async getStoreHomepage({ sellerID, pageNum }): Promise<any> {
-    return await this.productService.getStoreHomepage({
-      sellerID,
-      pageNum,
+  @MessagePattern({ cmd: 'PRICESTOCK_BY_PRODUCTID_GLOBALSKU' })
+  async getAttributeBySKU({ productID, globalSKU }): Promise<any> {
+    return await this.productService.getAttributeBySKU({
+      productID,
+      globalSKU,
     });
   }
+
+  // public profile seller product
+  @MessagePattern({ cmd: 'GET_STORE_HOMEPAGE' })
+  async getStoreHomepage({
+    sellerID,
+    page,
+    minPrice,
+    maxPrice,
+    searchKey,
+    sortBy,
+  }): Promise<any> {
+    return await this.productService.getStoreHomepage({
+      sellerID,
+      page,
+      minPrice,
+      maxPrice,
+      searchKey,
+      sortBy,
+    });
+  }
+
   @MessagePattern({ cmd: 'PUBLIC_SELLER_PRODUCT_BY_SELLER_ID' })
   async getSellerProfileProductBySellerID({ sellerID, pageNum }): Promise<any> {
     return await this.productService.getSellerProfileProductBySellerID({
