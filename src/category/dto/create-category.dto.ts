@@ -9,6 +9,9 @@ export class CreateCategoryDto {
 
   @ApiProperty()
   parentId: number;
+
+  @ApiProperty()
+  image: string;
 }
 
 export class AttributeData {

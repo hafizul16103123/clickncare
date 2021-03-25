@@ -10,4 +10,7 @@ export class Category extends TimeStamps {
 
   @prop()
   parentId: number;
+
+  @prop()
+  image: string;
 }

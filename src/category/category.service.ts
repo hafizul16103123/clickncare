@@ -28,6 +28,8 @@ export class CategoryService {
       categoryId: category_id,
       attribute: data,
       name: category.categoryName,
+      response: [],
+      data: [],
     });
 
     return data;
@@ -40,14 +42,15 @@ export class CategoryService {
   }
 
   async getCategory(category_id: string): Promise<any> {
-    // console.log(category_id);
     const data = await this.categoryModel.findOne({ _id: category_id }).exec();
     return data;
   }
 
-  //added by Kibria
   async getAttributeByCategoryId(id: number): Promise<any> {
     const attrDtl = await this.attributeModel.find({ categoryId: id });
+<<<<<<< HEAD
+    return attrDtl;
+=======
 
     const attr = attrDtl[0].attribute.data.filter((e) => e.required == true);
     let attribute = [];
@@ -64,5 +67,6 @@ export class CategoryService {
     });
 
     return attribute;
+>>>>>>> c2356b060496cdee75b5b619005ce28ad8599cdc
   }
 }

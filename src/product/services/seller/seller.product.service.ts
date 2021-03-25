@@ -56,7 +56,7 @@ export class SellerProductService {
       currentPage: pageNum,
       totalPages: product.totalPages,
       nextPage: product.nextPage,
-      showingFrom: product.form,
+      showingFrom: product.from,
       showingTo: product.to,
     };
   }
@@ -119,7 +119,7 @@ export class SellerProductService {
       currentPage: pageNum,
       totalPages: product.totalPages,
       nextPage: product.nextPage,
-      showingFrom: product.form,
+      showingFrom: product.from,
       showingTo: product.to,
     };
 
