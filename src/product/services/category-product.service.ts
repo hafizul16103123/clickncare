@@ -183,8 +183,8 @@ export class CategoryProductService {
 
 		for (const item of getCategoryLeftFilter) {
 			let matchCount = 0;
-			let totalCount = Object.keys(data.data).length;
-			for (const [userKey, userValue] of Object.entries<string>(data.data)) {
+			let totalCount = Object.keys(data).length;
+			for (const [userKey, userValue] of Object.entries<string>(data)) {
 				if (item.data[userKey]) {
 					if(item.data[userKey].toLowerCase().trim() === userValue.toLowerCase().trim()){
 						matchCount++;
@@ -247,7 +247,31 @@ export class CategoryProductService {
 	}
 
 
+  async createAttribute(categoryId: number, sellerId: string, data: any): Promise<any> {
+		//console.log(data.data[0]);
+		//const storePro = await this.productInfo.find();
 
+    const attrData = {};
+      for (const item of data) {
+          const userKey = item.key;
+          const userValue = item.value;
+        
+          if(userKey) {
+            attrData[userKey] = userValue;
+          }
+              
+      }
+
+     const obj = {
+      categoryId: categoryId,
+      sellerId: sellerId,
+      data: attrData
+    }
+    
+    console.log(obj)
+    //const seller_attr_save_result = await this.categoryLeftFilter.create(obj);
+
+	}
 
   
 }

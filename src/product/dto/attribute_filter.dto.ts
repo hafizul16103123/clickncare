@@ -7,7 +7,7 @@ import {
   export class Attribute_FilterDTO {
     
     @ApiProperty()
-    data: any[];
+    data: any;
   
   }
 
