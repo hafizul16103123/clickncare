@@ -268,8 +268,11 @@ export class CategoryProductService {
       data: attrData
     }
     
-    console.log(obj)
-    //const seller_attr_save_result = await this.categoryLeftFilter.create(obj);
+    const isExist = await this.categoryLeftFilter.findOne({categoryId: categoryId, sellerId : sellerId, data});
+    
+		if(isExist === null){
+			const seller_attr_save_result = await this.categoryLeftFilter.create(obj);
+		} 
 
 	}
 
