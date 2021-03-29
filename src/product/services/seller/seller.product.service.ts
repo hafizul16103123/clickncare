@@ -26,7 +26,6 @@ export class SellerProductService {
       this.productModel
         .find(query)
         .limit(config.pageLimit)
-        .populate('categoryId')
         .skip((pageNum - 1) * config.pageLimit),
       pageNum,
     );
@@ -75,7 +74,6 @@ export class SellerProductService {
     if (product != null) {
       product.status = 'deactivated';
       product.save();
-      console.log('sg');
       return 'success';
     } else {
       return 'false';

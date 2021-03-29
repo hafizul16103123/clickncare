@@ -51,8 +51,7 @@ export class SearchProductService {
       this.productModel
         .find(query)
         .skip((pageNum - 1) * config.pageLimit)
-        .limit(config.pageLimit)
-        .populate('categoryId'),
+        .limit(config.pageLimit),
       pageNum,
     );
 
@@ -471,14 +470,6 @@ export class SearchProductService {
     const productDoc = await this.productModel
       .findOne({ productID: productID })
       .exec();
-
-    // const doc = (
-    //   await this.productModel
-    //     .find({ categoryId: productDoc.categoryId })
-    //     .populate('categoryId')
-    //     .limit(20)
-    //     .exec()
-    // ).map((e) => e.toJSON());
 
     const doc = (
       await this.productModel

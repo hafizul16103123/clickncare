@@ -660,25 +660,64 @@ export class ProductService {
     };
   }
 
-  async getSellerProfileProductBySellerID({ sellerID, pageNum }): Promise<any> {
-    const product = await this.paginate<Product>(
-      this.productModel.find({ sellerID }),
-      pageNum,
-    );
+  async getSellerProfileProductBySellerID({
+    pageNum,
+    sellerID,
+    minPrice,
+    maxPrice,
+    searchKey,
+    sortBy,
+  }): Promise<any> {
+    const query: unknown = {};
+
+    if (minPrice !== undefined && maxPrice === undefined) {
+      query['priceStock.price'] = { $gte: parseInt(minPrice) };
+    } else if (maxPrice !== undefined && minPrice === undefined) {
+      query['priceStock.price'] = { $lte: parseInt(maxPrice) };
+    } else if (minPrice !== undefined && maxPrice !== undefined) {
+      query['priceStock.price'] = {
+        $gte: parseInt(minPrice),
+        $lte: parseInt(maxPrice),
+      };
+    } else if (searchKey !== undefined) {
+      query['productName'] = { $regex: '.*' + searchKey + '.*', $options: 'i' };
+    }
+
+    // ["BEST_SELLER","BEST_MATCH","PRICE_LOW_TO_HIGH","PRICE_HIGH_TO_LOW","HEIGHT_RATING","NEW_ARRIVAL"]
+    let product;
+    if (sortBy == 'BEST_MATCH') {
+      product = await this.paginate<Product>(
+        this.productModel.find({ sellerID }),
+        pageNum,
+      );
+    } else if (sortBy == 'PRICE_LOW_TO_HIGH') {
+      product = await this.paginate<Product>(
+        this.productModel
+          .find({ sellerID })
+          .sort({ 'priceStock.price': 'asc' }),
+        pageNum,
+      );
+    } else if (sortBy == 'PRICE_HIGH_TO_LOW') {
+      product = await this.paginate<Product>(
+        this.productModel.find({ sellerID }).sort({ 'priceStock.price': -1 }),
+        pageNum,
+      );
+    } else if (sortBy == 'NEW_ARRIVAL') {
+      product = await this.paginate<Product>(
+        this.productModel.find({ sellerID }).sort({ productID: -1 }),
+        pageNum,
+      );
+    } else {
+      product = await this.paginate<Product>(
+        this.productModel.find({ sellerID }),
+        pageNum,
+      );
+    }
 
     const finalProduct = product.data.map((e) => {
       return {
-        // id: e.productID,
-        // image: e.image[0],
-        // alt: e.highlights,
-        // title: e.productName,
-        // price: e.priceStock[0].price,
-        // discountPrice: 0,
-        // discountPercentage: 0,
-
-        ///
         id: e.productID,
-        name: 'Test product',
+        name: e.productName,
         categoryID: e.categoryId['_id'],
         sold: 20,
         rating: '4.5',
@@ -702,43 +741,6 @@ export class ProductService {
         sellerID,
       )
       .toPromise();
-
-    let colorValue = (await this.colorModel.find({})).map((e) => {
-      return e.color;
-    });
-    let sizeValue = (await this.sizeModel.find({})).map((e) => {
-      return e.size;
-    });
-    let countryValue = (await this.countryModel.find({})).map((e) => {
-      return e.country;
-    });
-    let brandValue = (await this.brandModel.find({})).map((e) => {
-      return e.brandName;
-    });
-
-    colorValue = [...new Set(colorValue)];
-    sizeValue = [...new Set(sizeValue)];
-    countryValue = [...new Set(countryValue)];
-    brandValue = [...new Set(brandValue)];
-
-    const cottonValue = ['cotton silk', 'cotton Blend'];
-    const petterValue = ['Color Block', 'Checked'];
-    const discount = ['10% - 30%', '20% - 25%'];
-    const service = ['Cash On Delivery', 'Free Shipping'];
-
-    const filters = {
-      color: colorValue,
-      size: sizeValue,
-      country: countryValue,
-      brand: brandValue,
-      fabric: cottonValue,
-      pattern: petterValue,
-      clothing_style: [],
-      mens_trend: [],
-      fit_type: [],
-      discount,
-      service,
-    };
 
     return {
       seller: seller,
@@ -1475,7 +1477,19 @@ export class ProductService {
           title: 'Pattern',
         },
         {
-          pid: '8',
+          options: [
+            {
+              value: 'Free Shipping',
+              title: 'Free Shipping',
+            },
+            {
+              value: 'Free Shipping',
+              title: 'Free Shipping',
+            },
+          ],
+          title: 'Discounts',
+        },
+        {
           options: [
             {
               value: '8:4447',

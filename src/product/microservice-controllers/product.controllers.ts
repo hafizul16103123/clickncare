@@ -111,10 +111,21 @@ export class ProductInfoMicroServiceController {
   }
 
   @MessagePattern({ cmd: 'PUBLIC_SELLER_PRODUCT_BY_SELLER_ID' })
-  async getSellerProfileProductBySellerID({ sellerID, pageNum }): Promise<any> {
+  async getSellerProfileProductBySellerID({
+    pageNum,
+    sellerID,
+    minPrice,
+    maxPrice,
+    searchKey,
+    sortBy,
+  }): Promise<any> {
     return await this.productService.getSellerProfileProductBySellerID({
-      sellerID,
       pageNum,
+      sellerID,
+      minPrice,
+      maxPrice,
+      searchKey,
+      sortBy,
     });
   }
 

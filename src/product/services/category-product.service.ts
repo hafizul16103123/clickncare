@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { mongoose, ReturnModelType } from '@typegoose/typegoose';
+import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { paginate } from 'src/utils/paginate';
 import config from '../../configuration';
@@ -10,8 +10,6 @@ import { SellerCountry } from '../entities/country.entity';
 import { SellerBrand } from '../entities/brand.entity';
 import { Category } from 'src/category/entities/category.entity';
 import { CategoryService } from 'src/category/category.service';
-import { ClientGrpcProxy } from '@nestjs/microservices';
-import { Schema } from 'mongoose';
 
 @Injectable()
 export class CategoryProductService {
@@ -76,7 +74,6 @@ export class CategoryProductService {
       this.productModel
         .find(query)
         .limit(config.pageLimit)
-        .populate('categoryId')
         .skip((pageNum - 1) * config.pageLimit),
       pageNum,
     );
@@ -151,9 +148,16 @@ export class CategoryProductService {
     delete product.data;
 
     // subcategory
-    const subcategory = await this.categoryModel.find({
-      parentId: category.categoryId,
-    });
+    const subcategory = await this.categoryModel
+      .find({
+        parentId: category.categoryId,
+      })
+      .select({
+        _id: 0,
+        image: 1,
+        categoryName: 1,
+        categoryId: 1,
+      });
 
     return {
       subCategory: subcategory,
