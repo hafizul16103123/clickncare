@@ -32,6 +32,7 @@ import { ProductReviewController } from './controllers/review/product_review.con
 import { ProductReviewService } from './services/review/product_review.service';
 import { SellerProductMicroServiceController } from './microservice-controllers/sellerProduct.controller';
 import { SellerProductService } from './services/seller/seller.product.service';
+import { Attribute_Filter } from './entities/attribute_filter.entity';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { SellerProductService } from './services/seller/seller.product.service';
       Attribute,
       DeliveryLocation,
       ProductReview,
+      Attribute_Filter,
     ]),
     ClientsModule.register([
       {

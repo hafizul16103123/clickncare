@@ -46,14 +46,14 @@ export class ProductController {
     return this.productService.single(id);
   }
 
-  @Put('update-product/:productId')
-  async updateProduct(
-    @Param('productId') id: string,
-    @Body() updateProductDto: UpdateProductDto,
-  ): Promise<Product> {
-    const data = this.productService.updateProductInfo(+id, updateProductDto);
-    return data;
-  }
+  // @Put('update-product/:productId')
+  // async updateProduct(
+  //   @Param('productId') id: string,
+  //   @Body() updateProductDto: UpdateProductDto,
+  // ): Promise<Product> {
+  //   const data = this.productService.updateProductInfo(+id, updateProductDto);
+  //   return data;
+  // }
 
   @Post('/save-daraz-product')
   async saveDarazProduct(@Body() data: any) {

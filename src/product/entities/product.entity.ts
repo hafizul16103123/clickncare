@@ -58,12 +58,6 @@ export class PriceStock {
   availability: string;
 
   @Prop()
-  color: string;
-
-  @Prop()
-  size: string;
-
-  @Prop()
   price: number;
 
   @Prop()
