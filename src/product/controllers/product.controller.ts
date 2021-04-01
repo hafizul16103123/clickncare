@@ -19,6 +19,8 @@ import * as fs from 'fs';
 import { User } from 'src/auth/user/user.decorator';
 import { UserGuard } from 'src/auth/user/user.guard';
 import { UserOptionalGuard } from 'src/auth/user/user.optional.guard';
+const http = require('https');
+import fetch from 'node-fetch';
 // import fs from fs;
 // const csv = require('csv-parser');
 // const fs = require('fs');
@@ -80,8 +82,46 @@ export class ProductController {
       });
   }
 
-  @Get('/single2')
+  @Get('/test')
   async single2(@Query('productID') productID: number) {
-    return this.productService.single(productID);
+    return this.requestStore(4059002, 244102909, 1);
   }
+
+  async requestStore(store, seller, page) {
+    const data = [];
+
+    // const options = {
+    //   method: 'GET',
+    //   hostname: 'magic-aliexpress1.p.rapidapi.com',
+    //   port: null,
+    //   path:
+    //     '/api/store/' +
+    //     store +
+    //     '/seller/' +
+    //     seller +
+    //     '/products?page=' +
+    //     page +
+    //     '',
+    //   headers: {
+    //     'x-rapidapi-key': '25617c8160mshdefb02a4126cb4ep106eb2jsn5d89e238746b',
+    //     'x-rapidapi-host': 'magic-aliexpress1.p.rapidapi.com',
+    //     useQueryString: true,
+    //   },
+    // };
+
+    return await fetch(
+      'https://magic-aliexpress1.p.rapidapi.com/api/store/4059002/seller/244102909/products?page=1',
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'x-rapidapi-key':
+            '25617c8160mshdefb02a4126cb4ep106eb2jsn5d89e238746b',
+          'x-rapidapi-host': 'magic-aliexpress1.p.rapidapi.com',
+        },
+      },
+    ).then((r) => (r.json() ? r.text() : 'p'));
+  }
+
+  async aliexpressProduct() {}
 }
