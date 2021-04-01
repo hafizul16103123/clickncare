@@ -7,8 +7,6 @@ import { UserGuard } from '@zaynax-limited/z-auth';
 import { SearchProductService } from '../services/search-product.service';
 import { IPaginatedData } from 'src/utils/paginate';
 
-@ApiBearerAuth()
-@UseGuards(UserGuard)
 @ApiTags('Product Related Operations')
 @Controller('products')
 export class SearchProductController {

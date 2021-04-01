@@ -16,6 +16,28 @@ export class ProductSpecificationDTO {
   value: string;
 }
 
+class PackageWeight {
+  @ApiProperty()
+  weight: string;
+
+  @ApiProperty({ enum: ['g', 'kg'] })
+  weightType: string;
+}
+
+class PackageDimentions {
+  @ApiProperty()
+  length: number;
+
+  @ApiProperty()
+  width: number;
+
+  @ApiProperty()
+  height: number;
+
+  @ApiProperty()
+  dimentionType: string;
+}
+
 export class ServiceDeliveryDTO {
   @ApiProperty()
   warrentyType: string;
@@ -27,10 +49,10 @@ export class ServiceDeliveryDTO {
   warrentyPolicy: string;
 
   @ApiProperty()
-  packageWeight: string;
+  packageWeight: PackageWeight;
 
   @ApiProperty()
-  packageDimentions: string;
+  packageDimentions?: PackageDimentions;
 
   @ApiProperty()
   dangerousGood: string;
@@ -41,16 +63,13 @@ export class PriceStock {
   availability: string;
 
   @ApiProperty()
-  color: string;
-
-  @ApiProperty()
-  size: string;
-
-  @ApiProperty()
   price: number;
 
   @ApiProperty()
   attribute: any;
+
+  @ApiProperty()
+  discount: any;
 
   @ApiProperty()
   quantity: number;
@@ -114,6 +133,9 @@ export class CreateProductDto {
 
   @ApiProperty({ type: [PriceStock] })
   priceStock: PriceStock[];
+
+  @ApiProperty()
+  hsnCode: string;
 
   @ApiProperty()
   size: any[];

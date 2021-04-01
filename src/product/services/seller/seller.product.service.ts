@@ -26,7 +26,6 @@ export class SellerProductService {
       this.productModel
         .find(query)
         .limit(config.pageLimit)
-        .populate('categoryId')
         .skip((pageNum - 1) * config.pageLimit),
       pageNum,
     );
@@ -56,7 +55,7 @@ export class SellerProductService {
       currentPage: pageNum,
       totalPages: product.totalPages,
       nextPage: product.nextPage,
-      showingFrom: product.form,
+      showingFrom: product.from,
       showingTo: product.to,
     };
   }
@@ -75,7 +74,6 @@ export class SellerProductService {
     if (product != null) {
       product.status = 'deactivated';
       product.save();
-      console.log('sg');
       return 'success';
     } else {
       return 'false';
@@ -119,7 +117,7 @@ export class SellerProductService {
       currentPage: pageNum,
       totalPages: product.totalPages,
       nextPage: product.nextPage,
-      showingFrom: product.form,
+      showingFrom: product.from,
       showingTo: product.to,
     };
 

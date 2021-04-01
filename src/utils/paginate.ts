@@ -6,7 +6,7 @@ export interface IPaginatedData<T> {
   nextPage: number | null;
   totalCount: number;
   totalPages: number;
-  form: number;
+  from: number;
   to: number;
   currentPage: number;
   items: [];
@@ -36,7 +36,7 @@ export async function paginate<T>(
       data: paginatedDocs,
       totalCount,
       totalPages,
-      form: pageNum * config.paginateViewLimit - (config.paginateViewLimit - 1),
+      from: pageNum * config.paginateViewLimit - (config.paginateViewLimit - 1),
       to: pageNum * config.paginateViewLimit + config.paginateViewLimit,
       nextPage,
       currentPage: pageNum,
@@ -47,7 +47,7 @@ export async function paginate<T>(
     items: [],
     totalCount: 0,
     totalPages: 0,
-    form: pageNum * config.paginateViewLimit,
+    from: pageNum * config.paginateViewLimit,
     to: pageNum * config.paginateViewLimit + config.paginateViewLimit,
     nextPage: null,
     currentPage: pageNum,
@@ -79,7 +79,7 @@ export async function filteredPaginate<T>(
       data: paginatedDocs,
       totalCount,
       totalPages,
-      form: pageNum * config.paginateViewLimit,
+      from: pageNum * config.paginateViewLimit,
       to: pageNum * config.paginateViewLimit + config.paginateViewLimit,
       nextPage,
       currentPage: pageNum,
@@ -90,7 +90,7 @@ export async function filteredPaginate<T>(
     data: [],
     totalCount: 0,
     totalPages: 0,
-    form: pageNum * config.paginateViewLimit,
+    from: pageNum * config.paginateViewLimit,
     to: pageNum * config.paginateViewLimit + config.paginateViewLimit,
     nextPage: null,
     currentPage: pageNum,

@@ -19,7 +19,6 @@ import { SellerColor } from './entities/color.entity';
 import { SellerBrand } from './entities/brand.entity';
 import { SearchProductController } from './controllers/search-product.controller';
 import { SearchProductService } from './services/search-product.service';
-import { ProductCategoryController } from './controllers/category-product.controller';
 import { CategoryProductService } from './services/category-product.service';
 import configuration from 'src/configuration';
 import { Category } from 'src/category/entities/category.entity';
@@ -70,7 +69,6 @@ import { CampaignService } from './services/campaign.service';
     ProductController,
     ProductInfoMicroServiceController,
     SearchProductController,
-    ProductCategoryController,
     DeliveryLocationController,
     ProductReviewController,
     SellerProductMicroServiceController,
