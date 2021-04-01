@@ -80,12 +80,12 @@ export class SellerProductService {
     }
   }
 
-  async sellerProductSearch(sellerID: string, text: string, pageNum: number) {
-    console.log(sellerID, text, pageNum);
+  async sellerProductSearch(sellerID: string, text: string, pageNum: number, productId: number, sellerSKU: string) {
+    //console.log(sellerID, text, pageNum);
 
     const product = await this.paginate<Product>(
       this.productModel
-        .find({ sellerID: sellerID, productName: text })
+        .find({$or:[ {'sellerID':sellerID}, {'productName':text}, {'productID':productId}, {'sellerSKU':sellerSKU} ]}) 
         .limit(config.pageLimit)
         .populate('categoryId')
         .skip((pageNum - 1) * config.pageLimit),
