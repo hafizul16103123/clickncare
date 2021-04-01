@@ -35,11 +35,13 @@ export class SellerProductMicroServiceController {
   }
 
   @MessagePattern({ cmd: 'SELLER_PRODUCT_SEARCH' })
-  async sellerProductSearch({ sellerID, text, pageNum }): Promise<any> {
+  async sellerProductSearch({ sellerID, text, pageNum, productId, sellerSKU }): Promise<any> {
     return await this.sellerProductService.sellerProductSearch(
       sellerID,
       text,
       pageNum,
+      productId,
+      sellerSKU
     );
   }
 
