@@ -33,6 +33,8 @@ import { ProductReviewService } from './services/review/product_review.service';
 import { SellerProductMicroServiceController } from './microservice-controllers/sellerProduct.controller';
 import { SellerProductService } from './services/seller/seller.product.service';
 import { Attribute_Filter } from './entities/attribute_filter.entity';
+import { CampaignMicroServiceController } from './microservice-controllers/campaign.controller';
+import { CampaignService } from './services/campaign.service';
 
 @Module({
   imports: [
@@ -51,7 +53,7 @@ import { Attribute_Filter } from './entities/attribute_filter.entity';
       Attribute,
       DeliveryLocation,
       ProductReview,
-      Attribute_Filter,
+      Attribute_Filter
     ]),
     ClientsModule.register([
       {
@@ -70,6 +72,7 @@ import { Attribute_Filter } from './entities/attribute_filter.entity';
     DeliveryLocationController,
     ProductReviewController,
     SellerProductMicroServiceController,
+    CampaignMicroServiceController
   ],
   providers: [
     ProductService,
@@ -80,6 +83,7 @@ import { Attribute_Filter } from './entities/attribute_filter.entity';
     DeliveryLocationService,
     ProductReviewService,
     SellerProductService,
+    CampaignService
   ],
 })
 export class ProductModule {}

@@ -509,7 +509,8 @@ export class SearchProductService {
         });
 
         return {
-          [`${e}`]: returnData,
+          count: returnData,
+          title: `${e}`
         };
       }),
     );
