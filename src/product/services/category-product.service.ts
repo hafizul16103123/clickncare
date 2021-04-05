@@ -1146,7 +1146,8 @@ export class CategoryProductService {
     return f_res;
   }
 
-  async createAttribute(
+
+  public async createAttribute(
     categoryId: number,
     sellerId: string,
     data: any,

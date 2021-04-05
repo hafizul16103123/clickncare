@@ -1,3 +1,4 @@
+import { CategoryProductService } from './category-product.service';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { mongoose, ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
@@ -18,6 +19,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ProductReview } from '../entities/review/product_review.entity';
 import { ProductReviewService } from './review/product_review.service';
 import { Category } from 'src/category/entities/category.entity';
+import { CategoryService } from 'src/category/category.service';
 
 @Injectable()
 export class ProductService {
@@ -42,6 +44,8 @@ export class ProductService {
     private readonly categoryModel: ReturnModelType<typeof Category>,
 
     private readonly productReview: ProductReviewService,
+
+    private readonly categoryProductService: CategoryProductService,
   ) {}
 
   private paginate = paginate;
@@ -58,6 +62,9 @@ export class ProductService {
     } else {
       data.productID = lastProduct.productID + 1;
     }
+
+    const specification = data.specification;
+    this.categoryProductService.createAttribute(1,  data.sellerID, specification);
 
     const savedProduct = await this.productModel.create(data);
 
