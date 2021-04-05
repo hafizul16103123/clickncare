@@ -15,20 +15,27 @@ import { CreateProductDto } from '../dto/create-product.dto';
 import { Product } from '../entities/product.entity';
 import { IPaginatedData } from 'src/utils/paginate';
 import csv from 'csv-parser';
-import * as fs from 'fs';
 import { User } from 'src/auth/user/user.decorator';
 import { UserGuard } from 'src/auth/user/user.guard';
 import { UserOptionalGuard } from 'src/auth/user/user.optional.guard';
 const http = require('https');
 import fetch from 'node-fetch';
-// import fs from fs;
+import * as fs from 'fs';
+import { InjectModel } from 'nestjs-typegoose';
+import { ReturnModelType } from '@typegoose/typegoose';
+
 // const csv = require('csv-parser');
 // const fs = require('fs');
 
 @ApiTags('Product Related Operations')
 @Controller('products')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+
+    @InjectModel(Product)
+    private readonly productModel: ReturnModelType<typeof Product>,
+  ) {}
 
   @Post()
   async addProduct(@Body() data: CreateProductDto, @User() z_id: string) {
@@ -84,44 +91,119 @@ export class ProductController {
 
   @Get('/test')
   async single2(@Query('productID') productID: number) {
-    return this.requestStore(4059002, 244102909, 1);
+    return this.aliexpressProduct(productID);
+    // return this.requestStore(4059002, 244102909, 1);
   }
 
   async requestStore(store, seller, page) {
-    const data = [];
-
-    // const options = {
-    //   method: 'GET',
-    //   hostname: 'magic-aliexpress1.p.rapidapi.com',
-    //   port: null,
-    //   path:
-    //     '/api/store/' +
-    //     store +
-    //     '/seller/' +
-    //     seller +
-    //     '/products?page=' +
-    //     page +
-    //     '',
-    //   headers: {
-    //     'x-rapidapi-key': '25617c8160mshdefb02a4126cb4ep106eb2jsn5d89e238746b',
-    //     'x-rapidapi-host': 'magic-aliexpress1.p.rapidapi.com',
-    //     useQueryString: true,
-    //   },
-    // };
-
-    return await fetch(
-      'https://magic-aliexpress1.p.rapidapi.com/api/store/4059002/seller/244102909/products?page=1',
+    //25617c8160mshdefb02a4126cb4ep106eb2jsn5d89e238746b
+    const data = await fetch(
+      `https://magic-aliexpress1.p.rapidapi.com/api/store/${store}/seller/${seller}/products?page=${page}`,
       {
-        method: 'GET',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
           'x-rapidapi-key':
-            '25617c8160mshdefb02a4126cb4ep106eb2jsn5d89e238746b',
+            '6b1cf5c3afmsh229619ba0408ba0p10a397jsnd0d36a678811',
           'x-rapidapi-host': 'magic-aliexpress1.p.rapidapi.com',
         },
       },
-    ).then((r) => (r.json() ? r.text() : 'p'));
+    ).then((r) => r.json());
+    console.log(data);
+
+    data.docs.map((e) => {
+      this.aliexpressProduct(e.product_id);
+    });
+
+    return data;
   }
 
-  async aliexpressProduct() {}
+  async aliexpressProduct(product_id) {
+    const data = await fetch(
+      `https://magic-aliexpress1.p.rapidapi.com/api/product/${product_id}`,
+      {
+        headers: {
+          'x-rapidapi-key':
+            '6b1cf5c3afmsh229619ba0408ba0p10a397jsnd0d36a678811',
+          'x-rapidapi-host': 'magic-aliexpress1.p.rapidapi.com',
+        },
+      },
+    ).then((r) => r.json());
+
+    const lastProduct = await this.productModel
+      .findOne()
+      .sort({ _id: -1 })
+      .limit(1);
+    if (lastProduct === null) {
+      data.productID = 1;
+    } else {
+      data.productID = lastProduct.productID + 1;
+    }
+
+    const specification = data.specs.map((e) => {
+      return {
+        key: e.attrName,
+        value: e.attrValue,
+      };
+    });
+
+    const priceStock = data.metadata.skuModule.productSKUPropertyList.map(
+      (e) => {
+        return e.skuPropertyValues.map((m) => {
+          // return {
+          //   [`${e.skuPropertyName}`]: m.propertyValueDisplayName,
+          // };
+        });
+        // { [`${e.skuPropertyName}`]: '1' };
+      },
+    );
+
+    return {
+      1: data.metadata.skuModule.productSKUPropertyList,
+      2: data.metadata.skuModule.skuPriceList,
+    };
+
+    const image = data.metadata.imageModule.imagePathList;
+    const status = 'live';
+    const productName = data.metadata.titleModule.product_title;
+
+    const longDescription = await fetch(
+      data.metadata.descriptionModule.descriptionUrl,
+    ).then((r) => r.text());
+    const englishDescription = longDescription;
+    const highlights = data.metadata.titleModule.description;
+    const whatInTheBox = '';
+
+    const packingInfo = await this.packingInfo(product_id);
+    const serviceDelivery = {
+      warrentyType: '',
+      warrentyPeriod: '',
+      warrentyPolicy: 'string',
+      packageWeight: {
+        weight: packingInfo.packageInfo.weight,
+        weightType: 'cm',
+      },
+      packageDimentions: {
+        length: packingInfo.packageInfo.length,
+        width: packingInfo.packageInfo.width,
+        height: packingInfo.packageInfo.height,
+        dimentionType: 'cm',
+      },
+      dangerousGood: 'no',
+    };
+    const sellerID = '';
+    const productID = lastProduct;
+    return '';
+  }
+
+  async packingInfo(productID) {
+    return await fetch(
+      'https://magic-aliexpress1.p.rapidapi.com/api/shipping/' + productID,
+      {
+        headers: {
+          'x-rapidapi-key':
+            '6b1cf5c3afmsh229619ba0408ba0p10a397jsnd0d36a678811',
+          'x-rapidapi-host': 'magic-aliexpress1.p.rapidapi.com',
+        },
+      },
+    ).then((r) => r.json());
+  }
 }

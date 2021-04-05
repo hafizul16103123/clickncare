@@ -80,14 +80,26 @@ export class SellerProductService {
     }
   }
 
-  async sellerProductSearch(sellerID: string, text: string, pageNum: number, productId: number, sellerSKU: string) {
+  async sellerProductSearch(
+    sellerID: string,
+    text: string,
+    pageNum: number,
+    productId: number,
+    sellerSKU: string,
+  ) {
     //console.log(sellerID, text, pageNum);
 
     const product = await this.paginate<Product>(
       this.productModel
-        .find({$or:[ {'sellerID':sellerID}, {'productName':text}, {'productID':productId}, {'sellerSKU':sellerSKU} ]}) 
+        .find({
+          $or: [
+            { productName: { $regex: '.*' + text + '.*' } },
+            { productID: productId },
+            { sellerSKU: sellerSKU },
+          ],
+          $and: [{ sellerID: sellerID }],
+        })
         .limit(config.pageLimit)
-        .populate('categoryId')
         .skip((pageNum - 1) * config.pageLimit),
       pageNum,
     );

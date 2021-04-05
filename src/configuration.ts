@@ -15,8 +15,8 @@ export const configuration = (): IConfig => {
     port: parseInt(process.env.PORT, 10) || 3000,
     mongoURL: process.env.MONGODB_URL,
     redisURL: process.env.REDIS_URL,
-    pageLimit: 20,
-    paginateViewLimit: 20,
+    pageLimit: 40,
+    paginateViewLimit: 40,
     onHoldTTL: parseInt(process.env.ON_HOLD_TTL, 10) || 1000 * 60 * 5,
   };
 };

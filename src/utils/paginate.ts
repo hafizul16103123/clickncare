@@ -37,7 +37,7 @@ export async function paginate<T>(
       totalCount,
       totalPages,
       from: pageNum * config.paginateViewLimit - (config.paginateViewLimit - 1),
-      to: pageNum * config.paginateViewLimit + config.paginateViewLimit,
+      to: pageNum * config.paginateViewLimit,
       nextPage,
       currentPage: pageNum,
     };

@@ -55,6 +55,11 @@ export class ProductInfoMicroServiceController {
     );
   }
 
+  @MessagePattern({ cmd: 'PUBLIC_CATEGORY_PRODUCT_FILTER' })
+  async getCategoryProductFilter(id): Promise<any> {
+    return await this.productCategoryService.getCategoryProductFilter(id);
+  }
+
   @MessagePattern({ cmd: 'PUBLIC_RECOMMENDED_PRODUCTS' })
   async recommendedProducts(productID: number): Promise<Product[] | null> {
     return await this.searchProductService.recommendedProducts(productID);
@@ -75,6 +80,11 @@ export class ProductInfoMicroServiceController {
       minPrice,
       maxPrice,
     );
+  }
+
+  @MessagePattern({ cmd: 'PUBLIC_SEARCH_PRODUCT_FILTER' })
+  async getSearchProductFilter(text): Promise<any> {
+    return await this.searchProductService.getSearchProductFilter(text);
   }
 
   @MessagePattern({ cmd: 'PRODUCT_BY_PRODUCTID_GLOBALSKU' })

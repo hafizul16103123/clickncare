@@ -35,20 +35,28 @@ export class ProductCategoryController {
   // }
 
   // body  example: [{
-    //          "key": "brand",
-    //           "value": "Choroi Express"
-    //      },
-    //      {
-    //          "key": "color_family",
-    //          "value": "Red"
-    //      }
-    // ]
+  //          "key": "brand",
+  //           "value": "Choroi Express"
+  //      },
+  //      {
+  //          "key": "color_family",
+  //          "value": "Red"
+  //      }
+  // ]
 
   @Post('createAttribute')
-  @ApiQuery({name: 'categoryId', type: Number})
-  @ApiQuery({name: 'sellerId', type: String })
-  async createAttribute(@Query("categoryId") categoryId: number, @Query("sellerId") sellerId: string, @Body() data: Attribute_FilterDTO) {
-      return await this.categorProductService.createAttribute(categoryId, sellerId, data);
+  @ApiQuery({ name: 'categoryId', type: Number })
+  @ApiQuery({ name: 'sellerId', type: String })
+  async createAttribute(
+    @Query('categoryId') categoryId: number,
+    @Query('sellerId') sellerId: string,
+    @Body() data: Attribute_FilterDTO,
+  ) {
+    return await this.categorProductService.createAttribute(
+      categoryId,
+      sellerId,
+      data,
+    );
   }
 
   // body example: {
@@ -57,9 +65,14 @@ export class ProductCategoryController {
   //  }
 
   @Post('getCategoryLeftFilter')
-  @ApiQuery({name: 'categoryId', type: Number} )
-  async getCategoryLeftFilter(@Query("categoryId") categoryId: number, @Body() data: Attribute_FilterDTO) {
-      return await this.categorProductService.getCategoryLeftFilter(categoryId, data);
+  @ApiQuery({ name: 'categoryId', type: Number })
+  async getCategoryLeftFilter(
+    @Query('categoryId') categoryId: number,
+    @Body() data: Attribute_FilterDTO,
+  ) {
+    return await this.categorProductService.getCategoryLeftFilter(
+      categoryId,
+      data,
+    );
   }
-
 }
