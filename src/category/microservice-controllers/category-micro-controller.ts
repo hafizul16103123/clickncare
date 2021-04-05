@@ -22,8 +22,8 @@ export class CategoryMicroServiceController {
   // }
 
   @MessagePattern({ cmd: 'SELLER_GET_CATEGORY_BY_ID' })
-  async attribute(category_id: string): Promise<any> {
+  async attribute({ categoryId, searchKey }): Promise<any> {
     // Get Category by ObjectID
-    return this.categoryService.getCategory(category_id);
+    return this.categoryService.getCategory(categoryId);
   }
 }
