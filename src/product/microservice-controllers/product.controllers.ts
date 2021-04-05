@@ -163,4 +163,6 @@ export class ProductInfoMicroServiceController {
     console.log(globalSKU, productID);
     return await this.productService.getVarientBySKU(globalSKU, productID);
   }
+
+  
 }

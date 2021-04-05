@@ -151,7 +151,7 @@ export class CategoryProductService {
         options: [
           {
             value: 'bags-travel',
-            title: 'Bags and Travel',
+            label: 'Bags and Travel',
           },
         ],
         title: 'Related Categories',
@@ -1155,7 +1155,8 @@ export class CategoryProductService {
     return f_res;
   }
 
-  async createAttribute(
+
+  public async createAttribute(
     categoryId: number,
     sellerId: string,
     data: any,
