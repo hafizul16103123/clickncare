@@ -35,6 +35,7 @@ import { SellerProductService } from './services/seller/seller.product.service';
 import { Attribute_Filter } from './entities/attribute_filter.entity';
 import { CampaignMicroServiceController } from './microservice-controllers/campaign.controller';
 import { CampaignService } from './services/campaign.service';
+import { ProductCategoryController } from './controllers/category-product.controller';
 
 @Module({
   imports: [
@@ -72,7 +73,8 @@ import { CampaignService } from './services/campaign.service';
     DeliveryLocationController,
     ProductReviewController,
     SellerProductMicroServiceController,
-    CampaignMicroServiceController
+    CampaignMicroServiceController,
+    ProductCategoryController
   ],
   providers: [
     ProductService,
@@ -83,7 +85,8 @@ import { CampaignService } from './services/campaign.service';
     DeliveryLocationService,
     ProductReviewService,
     SellerProductService,
-    CampaignService
+    CampaignService,
+    CategoryProductService
   ],
 })
 export class ProductModule {}

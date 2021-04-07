@@ -38,6 +38,7 @@ export class CategoryProductService {
     private readonly categoryLeftFilter: ReturnModelType<
       typeof Attribute_Filter
     >,
+    @InjectModel(Category) private readonly category: ReturnModelType<typeof Category>,
 
     private readonly categoryService: CategoryService,
   ) {}
@@ -1069,92 +1070,154 @@ export class CategoryProductService {
     return Math.ceil(total / config.pageLimit) === pageNum ? null : pageNum + 1;
   }
 
+  async findLastChild(categoryID: number) {
+		let categoryIDs = [];
+		const docs = await this.category.find({ parentId: categoryID });
+		//console.log({ parentID: categoryID, totalChild: docs.length })
+		for (const doc of docs) {
+			// console.log({ isLeaf: doc.leaf })
+			if (doc.leaf) {
+				categoryIDs.push({ name: doc.categoryName, categoryId: doc.categoryId });
+			} else {
+				const data = await this.findLastChild(doc.categoryId);
+				categoryIDs = [...categoryIDs, ...data]
+			}
+
+		}
+		return categoryIDs;
+	}
+
   async getCategoryLeftFilter(categoryId: number, data: any): Promise<any> {
-    //console.log(data.data[0]);
-    const getCategoryLeftFilter = await this.categoryLeftFilter.find({
-      categoryId: categoryId,
-    });
+    let categoryIDs = [];
+           
+		const docs = await this.category.find({ parentId: categoryId });
+		if(docs.length > 0) {
+			for (const doc of docs) {
+				if (doc.leaf) {
+					categoryIDs.push({ name: doc.categoryName, categoryId: doc.categoryId })
+				} else {
+					const idList = await this.findLastChild(doc.categoryId);
+					categoryIDs = [...categoryIDs, ...idList]
+				}
+	
+			}
+		} else {
+			//if there's no children assume the category itself is a leaf
+			const doc = await this.category.findOne({categoryId})
+			categoryIDs.push({ name: doc.categoryName, categoryId: doc.categoryId })
+		}
+		//console.log(docs.length)	
+		//return categoryIDs;
 
-    // console.log(getCategoryLeftFilter);
-    // console.log(data.data);
-    const filteredAttr = [];
+		
+		//console.log(childCategoryList);
+		let getCategoryLeftFilter = [];
+		let results = [];
+		let categoryAttr = [];
+		let filteredAttr = [];
 
-    for (const item of getCategoryLeftFilter) {
-      let matchCount = 0;
-      let totalCount = Object.keys(data).length;
-      for (const [userKey, userValue] of Object.entries<string>(data)) {
-        if (item.data[userKey]) {
-          if (
-            item.data[userKey].toLowerCase().trim() ===
-            userValue.toLowerCase().trim()
-          ) {
-            matchCount++;
+		for (const childCategory of categoryIDs) {
+	      //console.log(childCategory);
+		  
+      getCategoryLeftFilter = [];
+      const dCatId = await (await this.category.findOne({ categoryId: childCategory.categoryId }).select ('dCategoryId')).dCategoryId;
+      //console.log(dCatId);
+
+      getCategoryLeftFilter = await this.categoryLeftFilter.find({ categoryId: parseInt(dCatId) }); //childCategory.dCategoryId
+      //console.log(getCategoryLeftFilter);
+
+      filteredAttr = []
+      for (const item of getCategoryLeftFilter) {
+        //console.log(item);
+        let matchCount = 0;
+        let totalCount = Object.keys(data).length;
+        for (const [userKey, userValue] of Object.entries<string>(data)) {
+            
+            if (item.data[userKey]) {
+              //console.log({'data': item.data[userKey].toLowerCase().trim()});
+               // console.log({'userValue':userValue.toLowerCase().trim()});
+
+              if(item.data[userKey].toLowerCase().trim() === userValue.toLowerCase().trim()){
+                matchCount++;
+              }					
+            }
+      
+        }
+              // console.log({matchCount, totalCount});
+        
+        if (matchCount === totalCount) {
+               // console.log(item);
+          
+          filteredAttr.push(item);
+        }
+
+        //console.log(filteredAttr);
+      }
+
+      //console.log(filteredAttr)
+
+      categoryAttr = [];
+      let attrObj = {};
+      for (const item of filteredAttr) {
+        for (const [key, value] of Object.entries(item.data)) {
+          const attr_low = key.replace(/_/g, ' ');
+          const attr_cap = attr_low.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
+
+          attrObj = {
+            categoryId: item.categoryId,
+            attributeName: key,
+            attributeLabel: attr_cap,
+            attributeValue: value
           }
+
+          categoryAttr.push(attrObj);
         }
       }
-      if (matchCount === totalCount) {
-        filteredAttr.push(item);
+          //console.log(attrObj);
+      
+      //console.log(categoryAttr);			
+      //results = [];
+
+      for (const item of categoryAttr) {
+        const resItem = results.findIndex(e => e.categoryId === item.categoryId && e.attributeName === item.attributeName);
+        if (resItem !== -1) {
+          results[resItem].attributeValue = Array.from(new Set([...results[resItem].attributeValue, item.attributeValue]));
+        } else {
+          results.push({ ...item, attributeValue: [item.attributeValue] })
+        }
       }
-    }
 
-    //console.log(filteredAttr)
-
-    const categoryAttr = [];
-    let attrObj = {};
-    for (const item of filteredAttr) {
-      for (const [key, value] of Object.entries(item.data)) {
-        const attr_low = key.replace(/_/g, ' ');
-        const attr_cap = attr_low.replace(/(^\w{1})|(\s+\w{1})/g, (letter) =>
-          letter.toUpperCase(),
-        );
-
-        attrObj = {
-          categoryId: item.categoryId,
-          attributeName: key,
-          attributeLabel: attr_cap,
-          attributeValue: value,
-        };
-
-        categoryAttr.push(attrObj);
       }
-    }
 
-    const results = [];
+      //console.log(results);
+      
 
-    for (const item of categoryAttr) {
-      const resItem = results.findIndex(
-        (e) =>
-          e.categoryId === item.categoryId &&
-          e.attributeName === item.attributeName,
-      );
-      if (resItem !== -1) {
-        results[resItem].attributeValue = Array.from(
-          new Set([...results[resItem].attributeValue, item.attributeValue]),
-        );
-      } else {
-        results.push({ ...item, attributeValue: [item.attributeValue] });
-      }
-    }
+      const f_res = results.map((e) => {
+        const attr = e.attributeValue.map((m) => {
+          return {
+            title: m,
+            value: m
+          }
+        })
 
-    const f_res = results.map((e) => {
-      const attr = e.attributeValue.map((m) => {
+        // return {
+        // 	categoryId: e.categoryId,
+        // 	attributeName: e.attributeName,
+        // 	attributeLabel: e.attributeLabel,
+        // 	attributeValue: attr
+        // }
+
         return {
-          title: m,
-          value: m,
-        };
-      });
+          options: attr,
+          title: e.attributeLabel,
+          }
 
-      return {
-        categoryId: e.categoryId,
-        attributeName: e.attributeName,
-        attributeLabel: e.attributeLabel,
-        attributeValue: attr,
-      };
-    });
+      })
 
-    return f_res;
+
+      return f_res;
+    
   }
-
 
   public async createAttribute(
     categoryId: number,
