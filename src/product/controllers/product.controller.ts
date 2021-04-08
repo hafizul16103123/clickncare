@@ -90,12 +90,12 @@ export class ProductController {
   }
 
   @Get('/test')
-  async single2(@Query('productID') productID: number) {
+  async single2(@Query('productID') productID: number): Promise<unknown> {
     return this.aliexpressProduct(productID);
     // return this.requestStore(4059002, 244102909, 1);
   }
 
-  async requestStore(store, seller, page) {
+  async requestStore(store, seller, page): Promise<unknown> {
     //25617c8160mshdefb02a4126cb4ep106eb2jsn5d89e238746b
     const data = await fetch(
       `https://magic-aliexpress1.p.rapidapi.com/api/store/${store}/seller/${seller}/products?page=${page}`,
@@ -116,7 +116,7 @@ export class ProductController {
     return data;
   }
 
-  async aliexpressProduct(product_id) {
+  async aliexpressProduct(product_id): Promise<unknown> {
     const data = await fetch(
       `https://magic-aliexpress1.p.rapidapi.com/api/product/${product_id}`,
       {
@@ -128,14 +128,15 @@ export class ProductController {
       },
     ).then((r) => r.json());
 
+    const product: any = {};
     const lastProduct = await this.productModel
       .findOne()
       .sort({ _id: -1 })
       .limit(1);
     if (lastProduct === null) {
-      data.productID = 1;
+      product.productID = 1;
     } else {
-      data.productID = lastProduct.productID + 1;
+      product.productID = lastProduct.productID + 1;
     }
 
     const specification = data.specs.map((e) => {
@@ -145,35 +146,59 @@ export class ProductController {
       };
     });
 
+    const propertyValue = [];
     const priceStock = data.metadata.skuModule.productSKUPropertyList.map(
       (e) => {
         return e.skuPropertyValues.map((m) => {
+          m.skuPropertyName = e.skuPropertyName;
+          propertyValue.push(m);
           // return {
           //   [`${e.skuPropertyName}`]: m.propertyValueDisplayName,
           // };
         });
-        // { [`${e.skuPropertyName}`]: '1' };
       },
     );
 
-    return {
-      1: data.metadata.skuModule.productSKUPropertyList,
-      2: data.metadata.skuModule.skuPriceList,
-    };
+    const skuPriceList = [];
+    data.metadata.skuModule.skuPriceList.map((e) => {
+      const skus = e.skuPropIds.split(',');
 
-    const image = data.metadata.imageModule.imagePathList;
-    const status = 'live';
-    const productName = data.metadata.titleModule.product_title;
+      let skuName = [];
+      skus.map((m) => {
+        const data = propertyValue.filter((n) => n.propertyValueId == m);
 
-    const longDescription = await fetch(
+        skuName.push({
+          [`${data[0].skuPropertyName}`]: data[0].propertyValueDisplayName,
+        });
+        return data;
+      });
+      skuPriceList.push({
+        price: parseFloat(e.skuVal.actSkuCalPrice),
+        attribute: skuName,
+      });
+      skuName = [];
+    });
+
+    // return {
+    //   1: data.metadata.skuModule.productSKUPropertyList,
+    //   2: data.metadata.skuModule.skuPriceList,
+    //   3: skuPriceList,
+    // };
+
+    product.image = data.metadata.imageModule.imagePathList;
+    product.status = 'live';
+    product.productName = data.metadata.titleModule.product_title;
+    product.priceStock = skuPriceList;
+
+    product.longDescription = await fetch(
       data.metadata.descriptionModule.descriptionUrl,
     ).then((r) => r.text());
-    const englishDescription = longDescription;
-    const highlights = data.metadata.titleModule.description;
-    const whatInTheBox = '';
+    product.englishDescription = product.longDescription;
+    product.highlights = data.metadata.titleModule.description;
+    product.whatInTheBox = '';
 
     const packingInfo = await this.packingInfo(product_id);
-    const serviceDelivery = {
+    product.serviceDelivery = {
       warrentyType: '',
       warrentyPeriod: '',
       warrentyPolicy: 'string',
@@ -189,9 +214,8 @@ export class ProductController {
       },
       dangerousGood: 'no',
     };
-    const sellerID = '';
-    const productID = lastProduct;
-    return '';
+    product.sellerID = '';
+    return product;
   }
 
   async packingInfo(productID) {

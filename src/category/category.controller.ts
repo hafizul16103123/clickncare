@@ -22,6 +22,8 @@ export class CategoryController {
   @ApiTags('All category input parent id (Example 1)')
   @Get('')
   async mainCategory(@Query('parent_id') parent_id: number) {
+    console.log('category');
+
     return this.categoryService.category(parent_id);
   }
 
