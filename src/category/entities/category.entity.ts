@@ -13,4 +13,11 @@ export class Category extends TimeStamps {
 
   @prop()
   image: string;
+
+  @prop()
+  dCategoryId: string;
+
+  @prop()
+  leaf: string;
+
 }
