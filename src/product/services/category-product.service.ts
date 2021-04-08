@@ -1219,6 +1219,77 @@ export class CategoryProductService {
     
   }
 
+  async getStoreLeftFilter(sellerId: string, data: any): Promise<any> {
+		let getSellerLeftFilter = [];
+		let results = [];
+		let categoryAttr = [];
+		let filteredAttr = [];	
+
+		getSellerLeftFilter = await this.categoryLeftFilter.find({ sellerId: sellerId }); 
+		
+		for (const item of getSellerLeftFilter) {
+			let matchCount = 0;
+			let totalCount = Object.keys(data).length;
+			for (const [userKey, userValue] of Object.entries<string>(data)) {
+					
+				if (item.data[userKey]) {
+					if(item.data[userKey].toLowerCase().trim() === userValue.toLowerCase().trim()){
+						matchCount++;
+					}					
+				}		
+			}
+
+		 
+			if (matchCount === totalCount) {		   
+				filteredAttr.push(item);
+			}
+		}
+
+		categoryAttr = [];
+		let attrObj = {};
+		for (const item of filteredAttr) {
+			for (const [key, value] of Object.entries(item.data)) {
+				const attr_low = key.replace(/_/g, ' ');
+				const attr_cap = attr_low.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
+
+				attrObj = {
+					categoryId: item.categoryId,
+					attributeName: key,
+					attributeLabel: attr_cap,
+					attributeValue: value
+				}
+
+				categoryAttr.push(attrObj);
+			}
+		}
+
+		for (const item of categoryAttr) {
+			const resItem = results.findIndex(e => e.categoryId === item.categoryId && e.attributeName === item.attributeName);
+			if (resItem !== -1) {
+				results[resItem].attributeValue = Array.from(new Set([...results[resItem].attributeValue, item.attributeValue]));
+			} else {
+				results.push({ ...item, attributeValue: [item.attributeValue] })
+			}
+		}
+
+		const f_res = results.map((e) => {
+			const attr = e.attributeValue.map((m) => {
+				return {
+					title: m,
+					value: m
+				}
+			})
+
+			return {
+				options: attr,
+				title: e.attributeLabel,
+				}
+		})
+
+
+		return f_res;
+	}
+
   public async createAttribute(
     categoryId: number,
     sellerId: string,

@@ -75,4 +75,17 @@ export class ProductCategoryController {
       data,
     );
   }
+
+  
+  @Post('getStoreLeftFilter')
+  @ApiQuery({name: 'sellerId',  type: String})
+ //  example: {
+ //     "brand": "Choroi Express",
+ //     "color_family": "Sliver"
+ //  }
+  async getStoreLeftFilter(@Query("sellerId") sellerId: string, @Body() data: Attribute_FilterDTO) {         
+      return await this.categorProductService.getStoreLeftFilter(sellerId, data);
+  }
+
+
 }
