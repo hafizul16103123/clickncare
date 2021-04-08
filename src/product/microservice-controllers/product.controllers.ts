@@ -141,7 +141,7 @@ export class ProductInfoMicroServiceController {
 
   // category base seller product
   @MessagePattern({ cmd: 'PUBLIC_PRODUCT_BY_SELLER_ID' })
-  async getSellerProductBySellerID(sellerID: string): Promise<any> {
+  async getSellerProductBySellerID(sellerID): Promise<any> {
     return await this.productService.getSellerProductBySellerID(sellerID);
   }
 
@@ -163,6 +163,4 @@ export class ProductInfoMicroServiceController {
     console.log(globalSKU, productID);
     return await this.productService.getVarientBySKU(globalSKU, productID);
   }
-
-  
 }

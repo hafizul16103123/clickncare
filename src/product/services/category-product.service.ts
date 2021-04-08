@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
-import { paginate } from 'src/utils/paginate';
+import { customDataPaginator, paginate } from 'src/utils/paginate';
 import config from '../../configuration';
 import { Product } from '../entities/product.entity';
 import { SellerColor } from '../entities/color.entity';
@@ -43,6 +43,7 @@ export class CategoryProductService {
   ) {}
 
   private paginate = paginate;
+  private customDataPaginator = customDataPaginator;
 
   async productsByCategory(
     id,
@@ -78,15 +79,13 @@ export class CategoryProductService {
       };
     }
 
-    const product = await this.paginate<Product>(
-      this.productModel
-        .find(query)
-        .limit(config.paginateViewLimit)
-        .skip((pageNum - 1) * config.paginateViewLimit),
-      pageNum,
-    );
+    const productData = await this.productModel.find(query).exec();
 
-    const count = await this.productModel.countDocuments({ categoryId: id });
+    const product = await this.customDataPaginator(
+      productData,
+      pageNum,
+      config.paginateViewLimit,
+    );
 
     const finalProduct = product.data.map((e, index) => {
       return {
@@ -136,7 +135,7 @@ export class CategoryProductService {
       meta,
       ...product,
       items: finalProduct,
-      totalCount: count,
+      totalCount: product.totalCount,
       currentPage: pageNum,
       totalPages: product.totalPages,
       nextPage: product.nextPage,
@@ -1145,7 +1144,6 @@ export class CategoryProductService {
 
     return f_res;
   }
-
 
   public async createAttribute(
     categoryId: number,

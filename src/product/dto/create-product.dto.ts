@@ -18,7 +18,7 @@ export class ProductSpecificationDTO {
 
 class PackageWeight {
   @ApiProperty()
-  weight: string;
+  weight: number;
 
   @ApiProperty({ enum: ['g', 'kg'] })
   weightType: string;
@@ -59,17 +59,29 @@ export class ServiceDeliveryDTO {
 }
 
 export class PriceStock {
-  @ApiProperty()
+  @ApiHideProperty()
   availability: string;
 
   @ApiProperty()
   price: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: [
+      {
+        color: 'yellow',
+      },
+      {
+        size: 'L',
+      },
+    ],
+  })
   attribute: any;
 
+  @ApiProperty({ example: 'optional' })
+  sizeType?: string;
+
   @ApiProperty()
-  discount: any;
+  discount: number;
 
   @ApiProperty()
   quantity: number;
@@ -83,7 +95,7 @@ export class PriceStock {
   @ApiProperty()
   sellerSKU: string;
 
-  @ApiProperty()
+  @ApiHideProperty()
   globalSKU: string;
 
   @ApiProperty()
@@ -103,9 +115,6 @@ export class CreateProductDto {
   @ApiProperty()
   // @Transform((value: any) => mongoose.Types.ObjectId(value))
   categoryId: Ref<Category>;
-
-  @ApiProperty()
-  varient: any;
 
   @ApiProperty()
   video: string;
@@ -137,18 +146,8 @@ export class CreateProductDto {
   @ApiProperty()
   hsnCode: string;
 
-  @ApiProperty()
-  size: any[];
-
   @ApiHideProperty()
   status: string;
-
-  @ApiProperty()
-  color: any[];
-
-  @ApiProperty()
-  @ApiPropertyOptional()
-  sizeType?: string;
 }
 
 export class ChangeActiveStatus {

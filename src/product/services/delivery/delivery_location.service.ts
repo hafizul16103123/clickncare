@@ -3,12 +3,17 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { DeliveryLocationDto } from 'src/product/dto/delivery/delivery_location.dto';
 import { DeliveryLocation } from 'src/product/entities/delivery/delivery_location.entity';
+import * as fs from 'fs';
+import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
 export class DeliveryLocationService {
   constructor(
     @InjectModel(DeliveryLocation)
     private readonly deliveryLocation: ReturnModelType<typeof DeliveryLocation>,
+
+    @InjectModel(Product)
+    private readonly productModel: ReturnModelType<typeof Product>,
   ) {}
 
   async getDefaultDeliveryLocation(
@@ -59,7 +64,22 @@ export class DeliveryLocationService {
       },
       duration: 'Usually delivered in 4-5 days to this area',
     };
+    this.deliveryChargeValue(data.data.id, data.data.region);
+    console.log(data.data.id);
 
     return fData;
+  }
+
+  async deliveryChargeValue(productID, region) {
+    const charge = fs.readFileSync(
+      'src/product/services/delivery/data/delivery_charge.json',
+      'utf8',
+    );
+    const charge_jsons = JSON.parse(charge);
+    const chargeData = charge_jsons.filter((e) => e.destination == region);
+
+    const product = this.productModel.findOne({ productID: productID });
+
+    console.log('1', chargeData[0].zeroToZeroPointFive);
   }
 }

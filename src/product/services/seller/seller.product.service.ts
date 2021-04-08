@@ -87,20 +87,25 @@ export class SellerProductService {
     productId: number,
     sellerSKU: string,
   ) {
-    //console.log(sellerID, text, pageNum);
+    console.log(sellerID, text, pageNum);
+    //{ productName: { $regex: '.*' + text + '.*', $options: 'i' } }
+    console.log(typeof text);
+
+    const query = {
+      $or: [
+        { productName: { $regex: '.*' + text + '.*', $options: 'i' } },
+        { 'priceStock.sellerSKU': text },
+      ],
+      $and: [{ sellerID: sellerID }],
+    };
+
+    console.log(query);
 
     const product = await this.paginate<Product>(
       this.productModel
-        .find({
-          $or: [
-            { productName: { $regex: '.*' + text + '.*' } },
-            { productID: productId },
-            { sellerSKU: sellerSKU },
-          ],
-          $and: [{ sellerID: sellerID }],
-        })
-        .limit(config.pageLimit)
-        .skip((pageNum - 1) * config.pageLimit),
+        .find(query)
+        .limit(config.paginateViewLimit)
+        .skip((pageNum - 1) * config.paginateViewLimit),
       pageNum,
     );
 
@@ -123,7 +128,6 @@ export class SellerProductService {
     });
 
     const finaldata = {
-      ...product,
       items: finalProduct,
       totalCount: product.totalCount,
       currentPage: pageNum,

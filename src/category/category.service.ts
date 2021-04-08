@@ -41,7 +41,7 @@ export class CategoryService {
       .select('name');
   }
 
-  async getCategory({ category_id, searchKey }): Promise<any> {
+  async getCategory(category_id): Promise<any> {
     const data = await this.categoryModel.findOne({ _id: category_id }).exec();
     return data;
   }

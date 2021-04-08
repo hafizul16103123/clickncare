@@ -29,6 +29,8 @@ export async function paginate<T>(
     const paginatedDocs = docs.map((e) => e.toJSON() as T);
     const totalCount = await model.countDocuments({}).exec();
     const totalPages = Math.ceil(totalCount / config.paginateViewLimit);
+    console.log(config.paginateViewLimit, totalCount);
+
     const nextPage = pageNum + 1 > totalPages ? null : pageNum + 1;
 
     return {
@@ -71,7 +73,7 @@ export async function filteredPaginate<T>(
   if (docs.length > 0) {
     const paginatedDocs = docs.map((e) => e.toJSON() as T);
     const totalCount = await model.countDocuments({}).exec();
-    const totalPages = Math.ceil(totalCount / 20);
+    const totalPages = Math.ceil(totalCount / 40);
     const nextPage = pageNum + 1 > totalPages ? null : pageNum + 1;
 
     return {
@@ -94,5 +96,30 @@ export async function filteredPaginate<T>(
     to: pageNum * config.paginateViewLimit + config.paginateViewLimit,
     nextPage: null,
     currentPage: pageNum,
+  };
+}
+
+export async function customDataPaginator(
+  items,
+  page: number,
+  per_page: number,
+) {
+  // eslint-disable-next-line no-var
+  var page = page || 1,
+    per_page = per_page || 10,
+    offset = (page - 1) * per_page,
+    paginatedItems = items.slice(offset).slice(0, per_page),
+    total_pages = Math.ceil(items.length / per_page);
+
+  return {
+    data: paginatedItems,
+    totalPages: total_pages,
+    totalCount: items.length,
+    currentPage: page,
+    nextPage: total_pages > page ? page + 1 : null,
+    showingFrom: (page - 1) * per_page + 1,
+    showingTo: (page - 1) * per_page + per_page,
+    from: (page - 1) * config.paginateViewLimit + 1,
+    to: (page - 1) * config.paginateViewLimit + config.paginateViewLimit,
   };
 }

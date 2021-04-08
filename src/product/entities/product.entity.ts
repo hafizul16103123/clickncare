@@ -13,7 +13,7 @@ export class ProductSpecification {
 
 class PackageWeight {
   @Prop()
-  weight: string;
+  weight: number;
 
   @Prop({ enum: ['g', 'kg'] })
   weightType: string;
@@ -54,7 +54,7 @@ export class ServiceDelivery {
 }
 
 export class PriceStock {
-  @Prop()
+  @Prop({ default: 'yes' })
   availability: string;
 
   @Prop()
@@ -104,9 +104,6 @@ export class Product extends TimeStamps {
   categoryId: Ref<Category>;
 
   @Prop()
-  varient: any;
-
-  @Prop()
   video: string;
 
   @Prop()
@@ -138,10 +135,4 @@ export class Product extends TimeStamps {
 
   @Prop({ default: 'pending' })
   status: string;
-
-  @Prop()
-  size: any[];
-
-  @Prop()
-  color: any[];
 }
