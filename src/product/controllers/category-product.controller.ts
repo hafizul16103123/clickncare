@@ -87,5 +87,16 @@ export class ProductCategoryController {
       return await this.categorProductService.getStoreLeftFilter(sellerId, data);
   }
 
+  @Post('getSearchLeftFilter')
+	@ApiQuery({name: 'keyword',  type: String})
+	//  example: {
+	//     "brand": "Choroi Express",
+	//     "color_family": "Sliver"
+	//  }
+	async getSearchLeftFilter(@Query("keyword") keyword: string) {         
+		return await this.categorProductService.getSearchLeftFilter(keyword);
+	}
+
+
 
 }

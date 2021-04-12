@@ -1209,8 +1209,7 @@ export class CategoryProductService {
     
   }
 
-<<<<<<< HEAD
-=======
+
   async getStoreLeftFilter(sellerId: string, data: any): Promise<any> {
 		let getSellerLeftFilter = [];
 		let results = [];
@@ -1282,7 +1281,62 @@ export class CategoryProductService {
 		return f_res;
 	}
 
->>>>>>> kibria
+
+	async getSearchLeftFilter(keyword: string): Promise<any> {
+
+		let results = [];
+		let categoryAttr = [];
+		let f_res = [];
+
+    let products = await this.productModel.find();
+
+		for (let index = 0; index < products.length; index++) {
+			for (const item of products[index].specification) {
+				let attrObj = {};
+					const attr_low = item.key.replace(/_/g, ' ');
+					const attr_cap = attr_low.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());                    
+					
+					attrObj = {
+						//categoryId: item.categoryId,
+						attributeName: item.key,
+						attributeLabel: attr_cap,
+						attributeValue: item.value
+					}
+
+					categoryAttr.push(attrObj);
+			}
+
+			for (const item of categoryAttr) {
+				const resItem = results.findIndex(e => e.categoryId === item.categoryId && e.attributeName === item.attributeName);
+				if (resItem !== -1) {
+					results[resItem].attributeValue = Array.from(new Set([...results[resItem].attributeValue, item.attributeValue]));
+				} else {
+					results.push({ ...item, attributeValue: [item.attributeValue] })
+				}
+			}
+
+			
+			f_res = results.map((e) => {
+				const attr = e.attributeValue.map((m) => {
+					return {
+						title: m,
+						value: m
+					}
+				})
+	
+				return {
+					options: attr,
+					title: e.attributeLabel,
+					}
+			})
+
+		}
+	    
+
+		return f_res;
+	}
+
+
   public async createAttribute(
     categoryId: number,
     sellerId: string,
