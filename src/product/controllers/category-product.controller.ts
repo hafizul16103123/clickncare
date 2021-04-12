@@ -70,22 +70,22 @@ export class ProductCategoryController {
     @Query('categoryId') categoryId: number,
     @Body() data: Attribute_FilterDTO,
   ) {
-    return await this.categorProductService.getCategoryLeftFilter(
+    return await this.categorProductService.getCategoryProductFilter(
       categoryId,
       data,
     );
   }
 
-  
   @Post('getStoreLeftFilter')
-  @ApiQuery({name: 'sellerId',  type: String})
- //  example: {
- //     "brand": "Choroi Express",
- //     "color_family": "Sliver"
- //  }
-  async getStoreLeftFilter(@Query("sellerId") sellerId: string, @Body() data: Attribute_FilterDTO) {         
-      return await this.categorProductService.getStoreLeftFilter(sellerId, data);
+  @ApiQuery({ name: 'sellerId', type: String })
+  //  example: {
+  //     "brand": "Choroi Express",
+  //     "color_family": "Sliver"
+  //  }
+  async getStoreLeftFilter(
+    @Query('sellerId') sellerId: string,
+    @Body() data: Attribute_FilterDTO,
+  ) {
+    return await this.categorProductService.getStoreLeftFilter(sellerId, data);
   }
-
-
 }

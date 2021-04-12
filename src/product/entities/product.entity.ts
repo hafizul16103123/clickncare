@@ -82,7 +82,7 @@ export class PriceStock {
   globalSKU: string;
 
   @Prop()
-  freeItems: string;
+  freeItems?: string;
 }
 
 export class Product extends TimeStamps {

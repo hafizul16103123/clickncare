@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import config from '../../../configuration';
-import { paginate } from 'src/utils/paginate';
+import { customDataPaginator, paginate } from 'src/utils/paginate';
 import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
@@ -13,6 +13,7 @@ export class SellerProductService {
   ) {}
 
   private paginate = paginate;
+  private customDataPaginator = customDataPaginator;
 
   async getSellerProduct(sellerID: string, pageNum: number, status: string) {
     let query;
@@ -72,8 +73,13 @@ export class SellerProductService {
     });
 
     if (product != null) {
-      product.status = 'deactivated';
-      product.save();
+      await this.productModel.findOneAndUpdate(
+        {
+          productID: productID,
+          sellerID: sellerID,
+        },
+        { status: 'deactivated' },
+      );
       return 'success';
     } else {
       return 'false';
@@ -99,8 +105,6 @@ export class SellerProductService {
       $and: [{ sellerID: sellerID }],
     };
 
-    console.log(query);
-
     const product = await this.paginate<Product>(
       this.productModel
         .find(query)
@@ -108,6 +112,15 @@ export class SellerProductService {
         .skip((pageNum - 1) * config.paginateViewLimit),
       pageNum,
     );
+
+    // const product = await this.customDataPaginator(
+    //   this.productModel
+    //     .find(query)
+    //     .limit(config.paginateViewLimit)
+    //     .skip((pageNum - 1) * config.paginateViewLimit),
+    //   pageNum,
+    //   config.paginateViewLimit,
+    // );
 
     const finalProduct = product.data.map((e, index) => {
       return {

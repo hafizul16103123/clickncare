@@ -18,6 +18,5 @@ export class Category extends TimeStamps {
   dCategoryId: string;
 
   @prop()
-  leaf: string;
-
+  leaf: boolean;
 }

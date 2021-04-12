@@ -73,11 +73,11 @@ export class SearchProductService {
       };
     });
     const meta = {
-      title: key,
+      title: key.key,
       banner: {
         image:
           'https://firebasestorage.googleapis.com/v0/b/zdrop-7d8d4.appspot.com/o/Category%2Fbanner%2Flarge%2FGroup%206431.png?alt=media&token=9ed2da12-1d7f-4979-8394-3d22631f49e7',
-        alt: key,
+        alt: key.key,
       },
     };
 

@@ -36,6 +36,8 @@ import { Attribute_Filter } from './entities/attribute_filter.entity';
 import { CampaignMicroServiceController } from './microservice-controllers/campaign.controller';
 import { CampaignService } from './services/campaign.service';
 import { ProductCategoryController } from './controllers/category-product.controller';
+import { UploadImageController } from './controllers/image-cdn/upload-image.controller';
+import { UploadImageService } from './services/image-cdn/upload-image.service';
 
 @Module({
   imports: [
@@ -54,7 +56,7 @@ import { ProductCategoryController } from './controllers/category-product.contro
       Attribute,
       DeliveryLocation,
       ProductReview,
-      Attribute_Filter
+      Attribute_Filter,
     ]),
     ClientsModule.register([
       {
@@ -74,7 +76,8 @@ import { ProductCategoryController } from './controllers/category-product.contro
     ProductReviewController,
     SellerProductMicroServiceController,
     CampaignMicroServiceController,
-    ProductCategoryController
+    ProductCategoryController,
+    UploadImageController,
   ],
   providers: [
     ProductService,
@@ -86,7 +89,8 @@ import { ProductCategoryController } from './controllers/category-product.contro
     ProductReviewService,
     SellerProductService,
     CampaignService,
-    CategoryProductService
+    CategoryProductService,
+    UploadImageService,
   ],
 })
 export class ProductModule {}

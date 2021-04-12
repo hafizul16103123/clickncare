@@ -5,13 +5,10 @@ import { CampaignService } from '../services/campaign.service';
 
 @Controller()
 export class CampaignMicroServiceController {
-  constructor(
-    private readonly campaignService: CampaignService,
-  ) {}
+  constructor(private readonly campaignService: CampaignService) {}
 
   @MessagePattern({ cmd: 'GET_PRODUCTS_BY_IDs' })
-  async getByProductId(data ): Promise<any> {
-     return await this.campaignService.getProductsById(data);
+  async getByProductId(data): Promise<any> {
+    return await this.campaignService.getProductsById(data);
   }
-
 }

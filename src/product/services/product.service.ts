@@ -51,21 +51,53 @@ export class ProductService {
   private paginate = paginate;
 
   async addProduct(data: CreateProductDto, z_id: string): Promise<any> {
-    data.sellerID = 'ZDSEL1613990069';
+    const sellerID = 'ZDSEL1613990069';
+    data.sellerID = sellerID;
 
     const lastProduct = await this.productModel
       .findOne()
       .sort({ _id: -1 })
       .limit(1);
+    let productID;
     if (lastProduct === null) {
+      productID = 1;
       data.productID = 1;
     } else {
-      data.productID = lastProduct.productID + 1;
+      productID = lastProduct.productID + 1;
+      data.productID = productID;
     }
+
+    const priceStock = data.priceStock.map((e) => {
+      // attribute array to string
+      const attr = e.attribute
+        .map((e) => {
+          return Object.values(e);
+        })
+        .toString();
+
+      // replace coma
+      const regex = /,/gi;
+      const attrValue = attr.replaceAll(regex, '');
+
+      return {
+        availability: 'yes',
+        price: e.price,
+        attribute: e.attribute,
+        discount: e.discount,
+        quantity: e.quantity,
+        image: e.image,
+        smallImage: e.smallImage,
+        sellerSKU: e.sellerSKU,
+        globalSKU: sellerID + '' + productID + '' + attrValue,
+      };
+    });
+
+    // price stock
+    data.priceStock = priceStock;
 
     const specification = data.specification;
     this.categoryProductService.createAttribute(
-      1,
+      data.categoryId,
       data.sellerID,
       specification,
     );

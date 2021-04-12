@@ -39,7 +39,11 @@ export async function paginate<T>(
       totalCount,
       totalPages,
       from: pageNum * config.paginateViewLimit - (config.paginateViewLimit - 1),
-      to: pageNum * config.paginateViewLimit,
+      to: Math.abs(
+        config.paginateViewLimit -
+          pageNum * config.paginateViewLimit -
+          paginatedDocs.length,
+      ),
       nextPage,
       currentPage: pageNum,
     };

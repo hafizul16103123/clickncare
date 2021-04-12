@@ -99,7 +99,7 @@ export class PriceStock {
   globalSKU: string;
 
   @ApiProperty()
-  freeItems: string;
+  freeItems?: string;
 }
 
 export class CreateProductDto {
