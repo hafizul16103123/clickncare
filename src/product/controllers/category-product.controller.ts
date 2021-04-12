@@ -88,20 +88,14 @@ export class ProductCategoryController {
   ) {
     return await this.categorProductService.getStoreLeftFilter(sellerId, data);
   }
-<<<<<<< HEAD
-=======
 
   @Post('getSearchLeftFilter')
-	@ApiQuery({name: 'keyword',  type: String})
-	//  example: {
-	//     "brand": "Choroi Express",
-	//     "color_family": "Sliver"
-	//  }
-	async getSearchLeftFilter(@Query("keyword") keyword: string) {         
-		return await this.categorProductService.getSearchLeftFilter(keyword);
-	}
-
-
-
->>>>>>> a17bbce08e57dc53270de5e8c3e84ec511a4b9a7
+  @ApiQuery({ name: 'keyword', type: String })
+  //  example: {
+  //     "brand": "Choroi Express",
+  //     "color_family": "Sliver"
+  //  }
+  async getSearchLeftFilter(@Query('keyword') keyword: string) {
+    return await this.categorProductService.getSearchLeftFilter(keyword);
+  }
 }
