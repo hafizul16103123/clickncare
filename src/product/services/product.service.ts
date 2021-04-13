@@ -3,9 +3,9 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { mongoose, ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { IPaginatedData, paginate } from 'src/utils/paginate';
-import { CreateProductDto } from '../dto/create-product.dto';
+import { CreateProductDto, PriceStockDTO } from '../dto/create-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
-import { Product } from '../entities/product.entity';
+import { PriceStock, Product } from '../entities/product.entity';
 import {
   UpdateProductActiveStatus,
   UpdateProductApproveStatus,
@@ -20,6 +20,9 @@ import { ProductReview } from '../entities/review/product_review.entity';
 import { ProductReviewService } from './review/product_review.service';
 import { Category } from 'src/category/entities/category.entity';
 import { CategoryService } from 'src/category/category.service';
+import { PendingPrice } from '../entities/pending.price.entity';
+import { PendingPriceDTO, PriceUpdate } from '../dto/pending.price.dto';
+import { find } from 'rxjs/operators';
 
 @Injectable()
 export class ProductService {
@@ -42,6 +45,9 @@ export class ProductService {
 
     @InjectModel(Category)
     private readonly categoryModel: ReturnModelType<typeof Category>,
+
+    @InjectModel(PendingPrice)
+    private readonly pendingPriceModel: ReturnModelType<typeof PendingPrice>,
 
     private readonly productReview: ProductReviewService,
 
@@ -69,6 +75,7 @@ export class ProductService {
 
     const priceStock = data.priceStock.map((e) => {
       // attribute array to string
+      console.log('attr :', e.attribute);
       const attr = e.attribute
         .map((e) => {
           return Object.values(e);
@@ -77,7 +84,7 @@ export class ProductService {
 
       // replace coma
       const regex = /,/gi;
-      const attrValue = attr.replaceAll(regex, '');
+      const attrValue = attr.replace(regex, '');
 
       return {
         availability: 'yes',
@@ -95,6 +102,8 @@ export class ProductService {
     // price stock
     data.priceStock = priceStock;
 
+    console.log(data.priceStock);
+
     const specification = data.specification;
     this.categoryProductService.createAttribute(
       data.categoryId,
@@ -105,6 +114,38 @@ export class ProductService {
     const savedProduct = await this.productModel.create(data);
 
     return savedProduct;
+  }
+
+  // update product
+  async updatePrice(data: PriceUpdate, z_id: string): Promise<any> {
+    // data.z_id = '';
+
+    const seller = await this.redis
+      .send({ cmd: 'FIND_SELLERID_BY_Z_ID' }, '606048857bdfe933d4416af4')
+      .toPromise();
+
+    const sellerID = seller.sellerID;
+    const product = await this.productModel.find({
+      sellerID: sellerID,
+      productID: data.productID,
+    });
+
+    if (product.length == 0)
+      return 'You dont have access to update this product';
+
+    for (let index = 0; index < data.data.length; index++) {
+      const element = data.data[index];
+      const price = await this.pendingPriceModel.find({
+        globalSKU: element.globalSKU,
+        status: 'pending',
+      });
+
+      if (price == null) {
+        const price = await this.pendingPriceModel.create();
+      }
+    }
+
+    return data;
   }
 
   async getAllProducts(pageNum = 1): Promise<IPaginatedData<Product[]>> {
@@ -469,7 +510,7 @@ export class ProductService {
         $lte: parseInt(maxPrice),
       };
     } else if (searchKey !== undefined) {
-      query['productName'] = { $regex: '.*' + searchKey + '.*', $options: 'i' };
+      query['productName'] = { $regex: '.*' + searchKey + '.*' };
     }
 
     // ["BEST_SELLER","BEST_MATCH","PRICE_LOW_TO_HIGH","PRICE_HIGH_TO_LOW","HEIGHT_RATING","NEW_ARRIVAL"]

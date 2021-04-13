@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { InjectModel } from 'nestjs-typegoose';
 import { Product } from '../entities/product.entity';
-import { SearchProductService } from '../services/search-product.service';
+import { SearchProductService } from '../services/search/search-product.service';
 import { SellerProductService } from '../services/seller/seller.product.service';
 
 @Controller()

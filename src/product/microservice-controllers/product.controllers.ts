@@ -5,7 +5,7 @@ import { Product } from '../entities/product.entity';
 import { CategoryProductService } from '../services/category-product.service';
 import { DeliveryLocationService } from '../services/delivery/delivery_location.service';
 import { ProductService } from '../services/product.service';
-import { SearchProductService } from '../services/search-product.service';
+import { SearchProductService } from '../services/search/search-product.service';
 
 @Controller()
 export class ProductInfoMicroServiceController {

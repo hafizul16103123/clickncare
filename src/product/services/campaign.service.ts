@@ -18,7 +18,10 @@ export class CampaignService {
   async getProductsById(data): Promise<any> {
     let products = [];
 
-    for (const item of data) {
+    let i = 0;
+    for (const item of data.ids) {
+      if (i == data.limit) break;
+
       const product = await this.productModel.findOne({ productID: item });
       if (product) {
         products.push({
@@ -37,6 +40,7 @@ export class CampaignService {
           },
         });
       }
+      i++;
     }
 
     return products;

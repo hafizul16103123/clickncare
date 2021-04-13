@@ -64,17 +64,17 @@ export class ProductCategoryController {
   //     "color_family": "Sliver"
   //  }
 
-  @Post('getCategoryLeftFilter')
-  @ApiQuery({ name: 'categoryId', type: Number })
-  async getCategoryLeftFilter(
-    @Query('categoryId') categoryId: number,
-    @Body() data: Attribute_FilterDTO,
-  ) {
-    return await this.categorProductService.getCategoryProductFilter(
-      categoryId,
-      data,
-    );
-  }
+  // @Post('getCategoryLeftFilter')
+  // @ApiQuery({ name: 'categoryId', type: Number })
+  // async getCategoryLeftFilter(
+  //   @Query('categoryId') categoryId: number,
+  //   @Body() data: Attribute_FilterDTO,
+  // ) {
+  //   return await this.categorProductService.getCategoryProductFilter(
+  //     categoryId,
+  //     data,
+  //   );
+  // }
 
   @Post('getStoreLeftFilter')
   @ApiQuery({ name: 'sellerId', type: String })

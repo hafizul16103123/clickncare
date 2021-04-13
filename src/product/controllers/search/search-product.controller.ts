@@ -1,10 +1,10 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
-import { Product } from '../entities/product.entity';
+import { Product } from '../../entities/product.entity';
 
 import { UserGuard } from '@zaynax-limited/z-auth';
-import { SearchProductService } from '../services/search-product.service';
+import { SearchProductService } from '../../services/search/search-product.service';
 import { IPaginatedData } from 'src/utils/paginate';
 
 @ApiTags('Product Related Operations')
@@ -55,5 +55,10 @@ export class SearchProductController {
     @Query('sellerID') id: string,
   ): Promise<IPaginatedData<Product[]>> {
     return await this.searchProductService.getProductsBySellerId(+page, id);
+  }
+
+  @Get('search-suggession')
+  async suggession(@Query('text') text: string): Promise<any> {
+    return await this.searchProductService.suggession(text);
   }
 }

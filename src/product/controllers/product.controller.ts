@@ -11,8 +11,8 @@ import {
 } from '@nestjs/common';
 import { ProductService } from '../services/product.service';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateProductDto } from '../dto/create-product.dto';
-import { Product } from '../entities/product.entity';
+import { CreateProductDto, PriceStockDTO } from '../dto/create-product.dto';
+import { PriceStock, Product } from '../entities/product.entity';
 import { IPaginatedData } from 'src/utils/paginate';
 import csv from 'csv-parser';
 import { User } from 'src/auth/user/user.decorator';
@@ -23,6 +23,7 @@ import fetch from 'node-fetch';
 import * as fs from 'fs';
 import { InjectModel } from 'nestjs-typegoose';
 import { ReturnModelType } from '@typegoose/typegoose';
+import { PendingPriceDTO, PriceUpdate } from '../dto/pending.price.dto';
 
 // const csv = require('csv-parser');
 // const fs = require('fs');
@@ -40,6 +41,11 @@ export class ProductController {
   @Post()
   async addProduct(@Body() data: CreateProductDto, @User() z_id: string) {
     return this.productService.addProduct(data, z_id);
+  }
+
+  @Post('update-price')
+  async updatePrice(@Body() data: PriceUpdate, @User() z_id: string) {
+    return this.productService.updatePrice(data, z_id);
   }
 
   @Get()

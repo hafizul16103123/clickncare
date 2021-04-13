@@ -17,8 +17,8 @@ import { SellerCountry } from './entities/country.entity';
 import { SellerSize } from './entities/size.entity';
 import { SellerColor } from './entities/color.entity';
 import { SellerBrand } from './entities/brand.entity';
-import { SearchProductController } from './controllers/search-product.controller';
-import { SearchProductService } from './services/search-product.service';
+import { SearchProductController } from './controllers/search/search-product.controller';
+import { SearchProductService } from './services/search/search-product.service';
 import { CategoryProductService } from './services/category-product.service';
 import configuration from 'src/configuration';
 import { Category } from 'src/category/entities/category.entity';
@@ -38,6 +38,7 @@ import { CampaignService } from './services/campaign.service';
 import { ProductCategoryController } from './controllers/category-product.controller';
 import { UploadImageController } from './controllers/image-cdn/upload-image.controller';
 import { UploadImageService } from './services/image-cdn/upload-image.service';
+import { PendingPrice } from './entities/pending.price.entity';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { UploadImageService } from './services/image-cdn/upload-image.service';
       DeliveryLocation,
       ProductReview,
       Attribute_Filter,
+      PendingPrice,
     ]),
     ClientsModule.register([
       {

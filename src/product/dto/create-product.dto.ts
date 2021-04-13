@@ -58,7 +58,7 @@ export class ServiceDeliveryDTO {
   dangerousGood: string;
 }
 
-export class PriceStock {
+export class PriceStockDTO {
   @ApiHideProperty()
   availability: string;
 
@@ -140,8 +140,8 @@ export class CreateProductDto {
   @ApiProperty()
   serviceDelivery: ServiceDeliveryDTO;
 
-  @ApiProperty({ type: [PriceStock] })
-  priceStock: PriceStock[];
+  @ApiProperty({ type: [PriceStockDTO] })
+  priceStock: PriceStockDTO[];
 
   @ApiProperty()
   hsnCode: string;

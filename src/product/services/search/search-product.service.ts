@@ -2,8 +2,8 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { IPaginatedData, paginate } from 'src/utils/paginate';
-import config from '../../configuration';
-import { Product } from '../entities/product.entity';
+import config from '../../../configuration';
+import { Product } from '../../entities/product.entity';
 
 @Injectable()
 export class SearchProductService {
@@ -25,7 +25,7 @@ export class SearchProductService {
   ): Promise<any> {
     const query: unknown = {};
     if (key !== null) {
-      query['productName'] = { $regex: '.*' + key + '.*', $options: 'i' };
+      query['productName'] = { $regex: '.*' + key + '.*' };
     }
     if (color !== undefined) {
       query['priceStock.color'] = {
@@ -1464,5 +1464,16 @@ export class SearchProductService {
   private getNextPage(data: boolean, total: number, pageNum: number): number {
     if (data) return null;
     return Math.ceil(total / config.pageLimit) === pageNum ? null : pageNum + 1;
+  }
+
+  async suggession(text) {
+    const data = await this.productModel
+      .find({ productName: { $regex: '.*' + text + '.*', $options: 'i' } })
+      .select({ productName: 1, _id: 0 })
+      .limit(5);
+
+    return data.map((e) => {
+      return e.productName;
+    });
   }
 }

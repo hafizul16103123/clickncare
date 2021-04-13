@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
+import { S3 } from 'aws-sdk';
 
 @Injectable()
 export class UploadImageService {
@@ -8,14 +9,14 @@ export class UploadImageService {
     // if (!doc) throw new HttpException('Customer Not found', 404);
 
     // // aws upload
-    // const s3 = await new S3({
-    //   accessKeyId: config.awsAccessKey,
-    //   secretAccessKey: config.awsAccessSecret,
-    // });
+    const s3 = await new S3({
+      accessKeyId: 'AKIASWPGK3BQMZ6OPOV3', //'config.awsAccessKey',
+      secretAccessKey: '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', // 'config.awsAccessSecret',
+    });
 
-    const fileName = 'src/home/contents/home/budget_shopping/1-image-1.png';
+    const fileName = 'src/1.png';
 
-    const key = 'customer/profile/images/img.png';
+    const key = 'products/img.png';
 
     const uploadFile = () => {
       fs.readFile(fileName, (err, data) => {
@@ -27,11 +28,11 @@ export class UploadImageService {
           Key: key, // file will be saved as testBucket/contacts.csv
           Body: JSON.stringify(data, null, 2),
         };
-        // s3.upload(params, function (s3Err, data) {
-        //   if (s3Err) throw s3Err;
-        //   console.log(data.Location);
-        //   console.log(`File uploaded successfully at ${data.Location}`);
-        // });
+        s3.upload(params, function (s3Err, data) {
+          if (s3Err) throw s3Err;
+          console.log(data.Location);
+          console.log(`File uploaded successfully at ${data.Location}`);
+        });
       });
     };
 
