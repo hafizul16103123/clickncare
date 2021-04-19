@@ -2,9 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-
-import { AuthModule } from '@zaynax-limited/z-auth';
-
 import { ProductModule } from './product/product.module';
 import config from './configuration';
 import configuration from './configuration';

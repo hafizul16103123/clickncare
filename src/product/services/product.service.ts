@@ -118,21 +118,25 @@ export class ProductService {
 
   // update product
   async updatePrice(data: PriceUpdate, z_id: string): Promise<any> {
-    // data.z_id = '';
+    // data.z_id = '';   
+    // const seller = await this.redis
+    //   .send({ cmd: 'FIND_SELLERID_BY_Z_ID' }, '606048857bdfe933d4416af4')
+    //   .toPromise();
+  
+    // const sellerID = seller.sellerID;
 
-    const seller = await this.redis
-      .send({ cmd: 'FIND_SELLERID_BY_Z_ID' }, '606048857bdfe933d4416af4')
-      .toPromise();
-
-    const sellerID = seller.sellerID;
     const product = await this.productModel.find({
-      sellerID: sellerID,
+      // sellerID: sellerID,
+      sellerID: 'ZDSEL1616922757',
       productID: data.productID,
-    });
+    });     
+  
 
-    if (product.length == 0)
+    if (product.length == 0){
       return 'You dont have access to update this product';
-
+    }
+    let dataReturn;
+    
     for (let index = 0; index < data.data.length; index++) {
       const element = data.data[index];
       const price = await this.pendingPriceModel.find({
@@ -142,10 +146,13 @@ export class ProductService {
 
       if (price == null) {
         const price = await this.pendingPriceModel.create();
-      }
+      }                                              
+      const quantityQuery = { "priceStock.globalSKU": element.globalSKU,  productID: data.productID };
+      const updateQuery = { $set: { "priceStock.quantity": parseInt(element.quantity)} }
+      dataReturn = await this.productModel.updateOne(quantityQuery,updateQuery);                      
     }
 
-    return data;
+    return dataReturn;
   }
 
   async getAllProducts(pageNum = 1): Promise<IPaginatedData<Product[]>> {
