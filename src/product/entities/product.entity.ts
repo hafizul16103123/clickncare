@@ -44,7 +44,8 @@ export class ServiceDelivery {
   warrentyPolicy?: string;
 
   @Prop()
-  packageWeight?: PackageWeight;
+  // packageWeight?: PackageWeight;
+  packageWeight?: string;
 
   @Prop()
   packageDimentions?: PackageDimentions;

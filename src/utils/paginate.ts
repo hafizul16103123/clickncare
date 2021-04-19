@@ -30,6 +30,7 @@ export async function paginate<T>(
     const totalCount = await model.countDocuments({}).exec();
     const totalPages = Math.ceil(totalCount / config.paginateViewLimit);
     console.log(config.paginateViewLimit, totalCount);
+    console.log(paginatedDocs.length)
 
     const nextPage = pageNum + 1 > totalPages ? null : pageNum + 1;
 

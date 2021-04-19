@@ -111,9 +111,10 @@ export class ProductService {
       specification,
     );
 
-    const savedProduct = await this.productModel.create(data);
+    // const savedProduct = await this.productModel.create(data);
 
-    return savedProduct;
+    // return savedProduct;
+    return null;
   }
 
   // update product
@@ -125,34 +126,59 @@ export class ProductService {
   
     // const sellerID = seller.sellerID;
 
-    const product = await this.productModel.find({
-      // sellerID: sellerID,
-      sellerID: 'ZDSEL1616922757',
-      productID: data.productID,
-    });     
+    // const product = await this.productModel.find({
+    //   // sellerID: sellerID,
+    //   sellerID: 'ZDSEL1616922757',
+    //   productID: data.productID,
+    // });     
   
 
-    if (product.length == 0){
-      return 'You dont have access to update this product';
-    }
+    // if (product.length == 0){
+    //   return 'You dont have access to update this product';
+    // }
     let dataReturn;
+
+    
     
     for (let index = 0; index < data.data.length; index++) {
       const element = data.data[index];
-      const price = await this.pendingPriceModel.find({
-        globalSKU: element.globalSKU,
-        status: 'pending',
-      });
+      // const price = await this.pendingPriceModel.find({
+      //   globalSKU: element.globalSKU,
+      //   status: 'pending',
+      // });
 
-      if (price == null) {
-        const price = await this.pendingPriceModel.create();
-      }                                              
-      const quantityQuery = { "priceStock.globalSKU": element.globalSKU,  productID: data.productID };
-      const updateQuery = { $set: { "priceStock.quantity": parseInt(element.quantity)} }
-      dataReturn = await this.productModel.updateOne(quantityQuery,updateQuery);                      
+      // if (price == null) {
+      //   const price = await this.pendingPriceModel.create();
+      // }  
+
+      const dataInfo = await this.productModel.findOne({productID: data.productID});
+      console.log(dataInfo)
+      
+      const newPriceStock = dataInfo.priceStock.map(e => 
+        {
+          if(e.globalSKU === element.globalSKU) {
+            e.quantity = parseInt(element.quantity)
+          }
+          return e;
+        }
+      );
+      // console.log(newPriceStock);
+
+      dataInfo.priceStock = newPriceStock;
+      console.log(dataInfo);
+      await dataInfo.save();      
+      return dataInfo;
+      // const quantity = typeof(element.quantity) === 'number' ? element.quantity :  parseInt(element.quantity);
+      //dataInfo.priceStock[0].quantity = quantity;
+      // pricestock.quantity = quantity;
+      // pricestock.save();
+      // const quantity = typeof(element.quantity) === 'number' ? element.quantity :  parseInt(element.quantity);                                                 
+      // const quantityQuery = { "priceStock.globalSKU": element.globalSKU,  productID: data.productID };
+      // const updateQuery = { $set: { "priceStock.quantity": quantity} }
+      // dataReturn = await this.productModel.updateOne(quantityQuery,updateQuery);                      
     }
 
-    return dataReturn;
+    // return dataReturn;
   }
 
   async getAllProducts(pageNum = 1): Promise<IPaginatedData<Product[]>> {
