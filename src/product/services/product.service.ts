@@ -111,74 +111,55 @@ export class ProductService {
       specification,
     );
 
-    // const savedProduct = await this.productModel.create(data);
+    const savedProduct = await this.productModel.create(data);
 
-    // return savedProduct;
-    return null;
+    return savedProduct;
+    
   }
 
   // update product
   async updatePrice(data: PriceUpdate, z_id: string): Promise<any> {
     // data.z_id = '';   
-    // const seller = await this.redis
-    //   .send({ cmd: 'FIND_SELLERID_BY_Z_ID' }, '606048857bdfe933d4416af4')
-    //   .toPromise();
+    const seller = await this.redis
+      .send({ cmd: 'FIND_SELLERID_BY_Z_ID' }, '606048857bdfe933d4416af4')
+      .toPromise();
   
-    // const sellerID = seller.sellerID;
+    const sellerID = seller.sellerID;
 
-    // const product = await this.productModel.find({
-    //   // sellerID: sellerID,
-    //   sellerID: 'ZDSEL1616922757',
-    //   productID: data.productID,
-    // });     
+    const product = await this.productModel.find({
+      sellerID: sellerID,      
+      productID: data.productID,
+    });     
   
+    if (product.length == 0){
+      return 'You dont have access to update this product';
+    }
 
-    // if (product.length == 0){
-    //   return 'You dont have access to update this product';
-    // }
-    let dataReturn;
-
-    
-    
     for (let index = 0; index < data.data.length; index++) {
       const element = data.data[index];
-      // const price = await this.pendingPriceModel.find({
-      //   globalSKU: element.globalSKU,
-      //   status: 'pending',
-      // });
-
-      // if (price == null) {
-      //   const price = await this.pendingPriceModel.create();
-      // }  
-
-      const dataInfo = await this.productModel.findOne({productID: data.productID});
-      console.log(dataInfo)
-      
+      const price = await this.pendingPriceModel.find({
+        globalSKU: element.globalSKU,
+        status: 'pending',
+      });
+      if (price == null) {
+        const price = await this.pendingPriceModel.create();
+      }  
+      const dataInfo = await this.productModel.findOne({productID: data.productID});            
       const newPriceStock = dataInfo.priceStock.map(e => 
         {
           if(e.globalSKU === element.globalSKU) {
             e.quantity = parseInt(element.quantity)
+          } else {
+            throw new HttpException('The globalSKU you gave does not exist under this productID', 401);
           }
           return e;
         }
       );
-      // console.log(newPriceStock);
-
-      dataInfo.priceStock = newPriceStock;
-      console.log(dataInfo);
-      await dataInfo.save();      
-      return dataInfo;
-      // const quantity = typeof(element.quantity) === 'number' ? element.quantity :  parseInt(element.quantity);
-      //dataInfo.priceStock[0].quantity = quantity;
-      // pricestock.quantity = quantity;
-      // pricestock.save();
-      // const quantity = typeof(element.quantity) === 'number' ? element.quantity :  parseInt(element.quantity);                                                 
-      // const quantityQuery = { "priceStock.globalSKU": element.globalSKU,  productID: data.productID };
-      // const updateQuery = { $set: { "priceStock.quantity": quantity} }
-      // dataReturn = await this.productModel.updateOne(quantityQuery,updateQuery);                      
-    }
-
-    // return dataReturn;
+      dataInfo.priceStock = newPriceStock;      
+      dataInfo.markModified('priceStock');
+      await dataInfo.save();  
+      return dataInfo;                                 
+    }        
   }
 
   async getAllProducts(pageNum = 1): Promise<IPaginatedData<Product[]>> {

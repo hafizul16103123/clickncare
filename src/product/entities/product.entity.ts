@@ -44,8 +44,8 @@ export class ServiceDelivery {
   warrentyPolicy?: string;
 
   @Prop()
-  // packageWeight?: PackageWeight;
-  packageWeight?: string;
+  packageWeight?: PackageWeight;
+  //packageWeight?: string;
 
   @Prop()
   packageDimentions?: PackageDimentions;
@@ -126,7 +126,7 @@ export class Product extends TimeStamps {
   specification: ProductSpecification[];
 
   @Prop()
-  serviceDelivery: ServiceDelivery;
+  serviceDelivery: string | ServiceDelivery;
 
   @Prop()
   priceStock: PriceStock[];
