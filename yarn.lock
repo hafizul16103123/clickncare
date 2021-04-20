@@ -728,15 +728,6 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@zaynax-limited/z-auth@^2.3.8":
-  version "2.3.8"
-  resolved "https://npm.pkg.github.com/download/@zaynax-limited/z-auth/2.3.8/1522440a9b09600d9a082645bc46de835a81a49bf1cc92bc08d5b3bc28314285#826c70328055395600051c1d104f8b21e22303be"
-  integrity sha512-OIyXtYl9sx/RzpJdgmWu0hS3rIPHsYHhUpyQw86li9wx6qjIVO6OptPww94CcYQbgGGansJKpjv0whugNmoYew==
-  dependencies:
-    jsonwebtoken "^8.5.1"
-    redis "^3.0.2"
-    reflect-metadata "^0.1.13"
-
 abstract-logging@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/abstract-logging/-/abstract-logging-2.0.1.tgz#6b0c371df212db7129b57d2e7fcf282b8bf1c839"

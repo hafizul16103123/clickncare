@@ -4,16 +4,23 @@ import { InjectModel } from 'nestjs-typegoose';
 import config from '../../../configuration';
 import { customDataPaginator, paginate } from 'src/utils/paginate';
 import { Product } from 'src/product/entities/product.entity';
+import { PriceUpdate } from 'src/product/dto/pending.price.dto';
+import { PendingPrice } from 'src/product/entities/pending.price.entity';
 
 @Injectable()
 export class SellerProductService {
   constructor(
     @InjectModel(Product)
     private readonly productModel: ReturnModelType<typeof Product>,
+    @InjectModel(PendingPrice)
+    private readonly pendingPriceModel: ReturnModelType<typeof PendingPrice>,
   ) {}
 
   private paginate = paginate;
   private customDataPaginator = customDataPaginator;
+
+
+  
 
   async getSellerProduct(sellerID: string, pageNum: number, status: string) {
     let query;
@@ -166,5 +173,54 @@ export class SellerProductService {
     return await this.productModel.countDocuments({
       sellerID: sellerID,
     });
+  }
+
+
+  // updateProduct
+  async updatePrice(data: PriceUpdate, sellerID: string): Promise<any> {
+  
+    const product = await this.productModel.find({
+      sellerID: sellerID, 
+      //sellerID: 'ZDSEL1616922757',    
+      productID: data.productID,
+    });     
+  
+    if (product.length == 0){
+      return 'You dont have access to update this product';
+    }
+
+    for (let index = 0; index < data.data.length; index++) {
+      const element = data.data[index];
+      const price = await this.pendingPriceModel.findOne({
+        globalSKU: element.globalSKU,
+        status: 'pending',
+      });
+      console.log(price)     
+      if (price == null) {
+         console.log(price)
+         await this.pendingPriceModel.create({
+           productID: data.productID,
+           globalSKU: element.globalSKU,
+           sellerSKU: element.sellerSKU,
+           price: element.price,
+           status: 'pending'
+         });
+      }  
+      const dataInfo = await this.productModel.findOne({productID: data.productID});            
+      const newPriceStock = dataInfo.priceStock.map(e => 
+        {
+          if(e.globalSKU === element.globalSKU) {
+            e.quantity = parseInt(element.quantity)
+          } else {
+            throw new HttpException('The globalSKU you gave does not exist under this productID', 401);
+          }
+          return e;
+        }
+      );
+      dataInfo.priceStock = newPriceStock;      
+      dataInfo.markModified('priceStock');
+      await dataInfo.save();  
+      return dataInfo;                                 
+    }        
   }
 }

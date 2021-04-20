@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { Product } from '../../entities/product.entity';
 
-import { UserGuard } from '@zaynax-limited/z-auth';
+
 import { SearchProductService } from '../../services/search/search-product.service';
 import { IPaginatedData } from 'src/utils/paginate';
 

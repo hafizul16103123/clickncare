@@ -114,59 +114,10 @@ export class ProductService {
     const savedProduct = await this.productModel.create(data);
 
     return savedProduct;
+    
   }
 
-  // update product
-  async updatePrice(data: PriceUpdate, z_id: string): Promise<any> {
-    // data.z_id = '';
 
-    // const seller = await this.redis
-    //   .send({ cmd: 'FIND_SELLERID_BY_Z_ID' }, 'ZDSEL1616922757')
-    //   .toPromise();
-
-    const sellerID = 'ZDSEL1616922757';
-    const product = await this.productModel.find({
-      sellerID: sellerID,
-      productID: data.productID,
-    });
-
-    if (product.length == 0)
-      return 'You dont have access to update this product';
-
-    for (let index = 0; index < data.data.length; index++) {
-      const element = data.data[index];
-      const price = await this.pendingPriceModel.find({
-        globalSKU: element.globalSKU,
-        status: 'pending',
-      });
-
-      const product = await this.productModel.findOne({
-        'priceStock.globalSKU': element.globalSKU,
-      });
-
-      // price add to pendingPrice
-      if (price.length == 0) {
-        const price = await this.pendingPriceModel.create({
-          sellerID: sellerID,
-          productID: data.productID,
-          globalSKU: element.globalSKU,
-          sellerSKU: element.sellerSKU,
-          price: element.price,
-          status: 'pending',
-        });
-      }
-
-      //quantity add
-      await this.productModel.findOneAndUpdate(
-        {
-          'priceStock.globalSKU': element.globalSKU,
-        },
-        { 'priceStock.quantity': element.quantity },
-      );
-    }
-
-    return data;
-  }
 
   async getAllProducts(pageNum = 1): Promise<IPaginatedData<Product[]>> {
     const data = await this.paginate<Product>(this.productModel, pageNum);
@@ -1064,4 +1015,25 @@ export class ProductService {
     }
     // console.log(property);
   }
+
+  // Microservice: 'ALL_PENDING_PRICE'
+  async getAllPendingPrice(): Promise<any> {
+    const productID = 1;
+    return await this.pendingPriceModel.aggregate([
+      {
+        $match: { productID: productID}
+      },
+      {
+        $group: {
+          _id: {
+            globalSKU: "$globalSKU",
+            sellerSKU: "$sellerSKU",
+            price: "$price",
+            status: "$status",
+          }
+        }
+      }
+    ]);
+  }
+
 }
