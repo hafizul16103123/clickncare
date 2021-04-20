@@ -118,49 +118,7 @@ export class ProductService {
   }
 
   // update product
-  async updatePrice(data: PriceUpdate, z_id: string): Promise<any> {
-    // data.z_id = '';   
-    const seller = await this.redis
-      .send({ cmd: 'FIND_SELLERID_BY_Z_ID' }, '606048857bdfe933d4416af4')
-      .toPromise();
   
-    const sellerID = seller.sellerID;
-
-    const product = await this.productModel.find({
-      sellerID: sellerID,      
-      productID: data.productID,
-    });     
-  
-    if (product.length == 0){
-      return 'You dont have access to update this product';
-    }
-
-    for (let index = 0; index < data.data.length; index++) {
-      const element = data.data[index];
-      const price = await this.pendingPriceModel.find({
-        globalSKU: element.globalSKU,
-        status: 'pending',
-      });
-      if (price == null) {
-        const price = await this.pendingPriceModel.create();
-      }  
-      const dataInfo = await this.productModel.findOne({productID: data.productID});            
-      const newPriceStock = dataInfo.priceStock.map(e => 
-        {
-          if(e.globalSKU === element.globalSKU) {
-            e.quantity = parseInt(element.quantity)
-          } else {
-            throw new HttpException('The globalSKU you gave does not exist under this productID', 401);
-          }
-          return e;
-        }
-      );
-      dataInfo.priceStock = newPriceStock;      
-      dataInfo.markModified('priceStock');
-      await dataInfo.save();  
-      return dataInfo;                                 
-    }        
-  }
 
   async getAllProducts(pageNum = 1): Promise<IPaginatedData<Product[]>> {
     const data = await this.paginate<Product>(this.productModel, pageNum);
@@ -1058,4 +1016,25 @@ export class ProductService {
     }
     // console.log(property);
   }
+
+  // Microservice: 'ALL_PENDING_PRICE'
+  async getAllPendingPrice(): Promise<any> {
+    const productID = 1;
+    return await this.pendingPriceModel.aggregate([
+      {
+        $match: { productID: productID}
+      },
+      {
+        $group: {
+          _id: {
+            globalSKU: "$globalSKU",
+            sellerSKU: "$sellerSKU",
+            price: "$price",
+            status: "$status",
+          }
+        }
+      }
+    ]);
+  }
+
 }

@@ -3,8 +3,6 @@ import { prop } from '@typegoose/typegoose';
 import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 
 export class PendingPriceDTO extends TimeStamps {
-  @ApiHideProperty()
-  z_id: string;
 
   @ApiProperty()
   globalSKU: string;

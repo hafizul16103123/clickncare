@@ -43,10 +43,10 @@ export class ProductController {
     return this.productService.addProduct(data, z_id);
   }
 
-  @Post('update-price')
-  async updatePrice(@Body() data: PriceUpdate, @User() z_id: string) {
-    return this.productService.updatePrice(data, z_id);
-  }
+  // @Post('update-price')
+  // async updatePrice(@Body() data: PriceUpdate, @User() z_id: string) {
+  //   return this.productService.updatePrice(data, z_id);
+  // }
 
   @Get()
   async getProducts(
@@ -99,6 +99,10 @@ export class ProductController {
   async single2(@Query('productID') productID: number): Promise<unknown> {
     return this.aliexpressProduct(productID);
     // return this.requestStore(4059002, 244102909, 1);
+  }
+  @Get('test2')
+  async getAllPendingPrice(): Promise<any> {    
+    return await this.productService.getAllPendingPrice();
   }
 
   async requestStore(store, seller, page): Promise<unknown> {

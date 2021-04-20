@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { InjectModel } from 'nestjs-typegoose';
+import { PriceUpdate } from '../dto/pending.price.dto';
 import { Product } from '../entities/product.entity';
 import { SearchProductService } from '../services/search/search-product.service';
 import { SellerProductService } from '../services/seller/seller.product.service';
@@ -54,5 +55,11 @@ export class SellerProductMicroServiceController {
   @MessagePattern({ cmd: 'SELLER_PRODUCT_COUNT' })
   async sellerProductCount(sellerID: string): Promise<any> {
     return await this.sellerProductService.sellerProductCount(sellerID);
+  
+  }
+
+  @MessagePattern({ cmd: 'SELLER_UPDATE_PRODUCT' })
+  async sellerUpdateProduct(data: PriceUpdate, sellerID: string): Promise<any> {
+    return await this.sellerProductService.updatePrice(data, sellerID);
   }
 }

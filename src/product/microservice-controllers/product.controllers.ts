@@ -163,4 +163,10 @@ export class ProductInfoMicroServiceController {
     console.log(globalSKU, productID);
     return await this.productService.getVarientBySKU(globalSKU, productID);
   }
+
+  @MessagePattern({ cmd: 'ALL_PENDING_PRICE' })
+  async getAllPendingPrice(): Promise<any> {
+    console.log();
+    return await this.productService.getAllPendingPrice()
+  }
 }

@@ -25,13 +25,13 @@ import { RegionModule } from './region/region.module';
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: 'MICRO_SERVICE',
-      useValue: ClientProxyFactory.create({
-        options: { url: config.redisURL },
-        transport: Transport.REDIS,
-      }),
-    },
+    // {
+    //   provide: 'MICRO_SERVICE',
+    //   useValue: ClientProxyFactory.create({
+    //     options: { url: config.redisURL },
+    //     transport: Transport.REDIS,
+    //   }),
+    // },
   ],
 })
 export class AppModule {}
