@@ -30,13 +30,21 @@ export class SellerProductService {
       query = { sellerID: sellerID, status: status };
     }
 
+    // const product = await this.customDataPaginator(
+    //   this.productModel
+    //     .find(query)
+    //     .limit(config.pageLimit)
+    //     .skip((pageNum - 1) * config.pageLimit),
+    //   pageNum,
+    //   config.paginateViewLimit,
+    // );
+
     const product = await this.paginate<Product>(
-      this.productModel
-        .find(query)
-        .limit(config.pageLimit)
-        .skip((pageNum - 1) * config.pageLimit),
+      this.productModel.find(query),
       pageNum,
     );
+
+    console.log(await this.productModel.countDocuments({}).exec());
 
     const finalProduct = product.data.map((e, index) => {
       return {
@@ -44,6 +52,7 @@ export class SellerProductService {
         name: e.productName,
         categoryID: e.categoryId,
         sold: 20,
+        stock: 1,
         rating: '4.5',
         imageUrl: e.image[0],
         altText: e.productName,

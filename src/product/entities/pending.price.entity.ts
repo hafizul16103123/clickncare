@@ -16,7 +16,7 @@ import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
   },
 })
 export class PendingPrice extends TimeStamps {
-  
+
   @prop()
   productID: number;
 

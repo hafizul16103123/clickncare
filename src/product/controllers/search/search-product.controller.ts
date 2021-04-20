@@ -56,9 +56,4 @@ export class SearchProductController {
   ): Promise<IPaginatedData<Product[]>> {
     return await this.searchProductService.getProductsBySellerId(+page, id);
   }
-
-  @Get('search-suggession')
-  async suggession(@Query('text') text: string): Promise<any> {
-    return await this.searchProductService.suggession(text);
-  }
 }

@@ -23,27 +23,28 @@ export class SearchProductService {
     maxPrice,
     pageNum = 1,
   ): Promise<any> {
+    // console.log({ key, color, size, minPrice, maxPrice });
     const query: unknown = {};
-    if (key !== null) {
-      query['productName'] = { $regex: '.*' + key + '.*' };
+    if (key.key !== null) {
+      query['productName'] = { $regex: '.*' + key.key + '.*' };
     }
-    if (color !== undefined) {
+    if (key.color !== undefined) {
       query['priceStock.color'] = {
-        $regex: '.*' + color + '.*',
+        $regex: '.*' + key.color + '.*',
         $options: 'i',
       };
     }
     if (size !== undefined) {
-      query['priceStock.size'] = parseInt(size);
+      query['priceStock.size'] = parseInt(key.size);
     }
-    if (minPrice !== undefined && maxPrice === undefined) {
-      query['priceStock.price'] = { $gte: parseInt(minPrice) };
-    } else if (maxPrice !== undefined && minPrice === undefined) {
-      query['priceStock.price'] = { $lte: parseInt(maxPrice) };
-    } else if (minPrice !== undefined && maxPrice !== undefined) {
+    if (key.minPrice !== undefined && key.maxPrice === undefined) {
+      query['priceStock.price'] = { $gte: parseInt(key.minPrice) };
+    } else if (key.maxPrice !== undefined && key.minPrice === undefined) {
+      query['priceStock.price'] = { $lte: parseInt(key.maxPrice) };
+    } else if (key.minPrice !== undefined && key.maxPrice !== undefined) {
       query['priceStock.price'] = {
-        $gte: parseInt(minPrice),
-        $lte: parseInt(maxPrice),
+        $gte: parseInt(key.minPrice),
+        $lte: parseInt(key.maxPrice),
       };
     }
 
@@ -82,7 +83,7 @@ export class SearchProductService {
     };
 
     if (!doc) throw new HttpException('Products not found', 404);
-
+    delete doc.data;
     return {
       meta,
       filters: [
@@ -1466,14 +1467,21 @@ export class SearchProductService {
     return Math.ceil(total / config.pageLimit) === pageNum ? null : pageNum + 1;
   }
 
-  async suggession(text) {
+  async getSuggesion(text: string) {
     const data = await this.productModel
       .find({ productName: { $regex: '.*' + text + '.*', $options: 'i' } })
       .select({ productName: 1, _id: 0 })
       .limit(5);
 
-    return data.map((e) => {
+    const suggestion = data.map((e) => {
       return e.productName;
     });
+
+    const final = {
+      suggestion: suggestion,
+      tending: suggestion,
+    };
+
+    return final;
   }
 }

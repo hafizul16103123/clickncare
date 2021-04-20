@@ -117,8 +117,7 @@ export class ProductService {
     
   }
 
-  // update product
-  
+
 
   async getAllProducts(pageNum = 1): Promise<IPaginatedData<Product[]>> {
     const data = await this.paginate<Product>(this.productModel, pageNum);

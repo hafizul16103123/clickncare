@@ -18,33 +18,33 @@ export async function paginate<T>(
   pageNum = 1,
   populate?: string[],
 ): Promise<IPaginatedData<T[]>> {
+  const totalCount = await model.countDocuments({}).exec();
   const docs = await model
     .find({})
     .limit(config.paginateViewLimit)
-    .skip(pageNum === 1 ? 0 : pageNum * config.paginateViewLimit)
+    .skip(
+      pageNum === 1
+        ? 0
+        : pageNum * config.paginateViewLimit - config.paginateViewLimit,
+    )
     .populate(populate)
     .exec();
 
   if (docs.length > 0) {
     const paginatedDocs = docs.map((e) => e.toJSON() as T);
-    const totalCount = await model.countDocuments({}).exec();
     const totalPages = Math.ceil(totalCount / config.paginateViewLimit);
-    console.log(config.paginateViewLimit, totalCount);
-    console.log(paginatedDocs.length)
 
     const nextPage = pageNum + 1 > totalPages ? null : pageNum + 1;
 
+    const from =
+      pageNum * config.paginateViewLimit - (config.paginateViewLimit - 1);
     return {
       items: [],
       data: paginatedDocs,
       totalCount,
       totalPages,
       from: pageNum * config.paginateViewLimit - (config.paginateViewLimit - 1),
-      to: Math.abs(
-        config.paginateViewLimit -
-          pageNum * config.paginateViewLimit -
-          paginatedDocs.length,
-      ),
+      to: Math.abs(from + pageNum * config.paginateViewLimit - totalCount),
       nextPage,
       currentPage: pageNum,
     };
