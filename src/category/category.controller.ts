@@ -7,6 +7,7 @@ import { InjectModel } from 'nestjs-typegoose';
 import { Category } from './entities/category.entity';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { Attribute } from './entities/attribute.entity';
+import { response } from 'express';
 
 @ApiTags('Category')
 @Controller('category')
@@ -35,14 +36,16 @@ export class CategoryController {
   }
 
   // @ApiTags('Test')
-  // @Get('test')
+  // @Get('test-cat')
   // async test() {
   //   // const read = fs.readFileSync('src/category/attribute');
   //   // fs.readdirSync('./attribute');
-  //   const fileName = fs.readdirSync('src/category/out');
+  //   const fileName = fs.readdirSync('src/category/out/out');
+
   //   fileName.map(async (e) => {
-  //     const read = fs.readFileSync('src/category/out/' + e).toString();
+  //     const read = fs.readFileSync('src/category/out/out/' + e).toString();
   //     const data = JSON.parse(read);
+
   //     // console.log(data.data[7].dataSource);
 
   //     const f = e.replace(/\-/g, ' ');
@@ -55,19 +58,26 @@ export class CategoryController {
   //       categoryId: dataBaseCat.categoryId,
   //     });
 
-  //     if (attribute != null) {
-  //       const attr = [];
-  //       for (let index = 0; index < data.data.length; index++) {
-  //         const element = data.data[index];
-  //         if (element.group == 'sale') {
-  //           attr.push(element);
-  //         }
+  //     const attr = [];
+  //     for (let index = 0; index < data.data.length; index++) {
+  //       const element = data.data[index];
+
+  //       if (element.group == 'sale') {
+  //         attr.push(element);
   //       }
-
-  //       attribute.response = attr;
-
-  //       attribute.save();
   //     }
+
+  //     await this.attributeModel.create({
+  //       categoryId: dataBaseCat.categoryId,
+  //       attribute: data.data[7].dataSource,
+  //       name: dataBaseCat.categoryName,
+  //       response: attr,
+  //       data: data,
+  //     });
+
+  //     // attribute.response = attr;
+
+  //     // attribute.save();
   //   });
   // }
 }

@@ -3,10 +3,10 @@ import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 
 export class PendingPrice extends TimeStamps {
   @prop()
-  z_id: string;
+  sellerID: string;
 
   @prop()
-  productID: string;
+  productID: number;
 
   @prop()
   globalSKU: string;
@@ -15,7 +15,7 @@ export class PendingPrice extends TimeStamps {
   sellerSKU: string;
 
   @prop()
-  price: string;
+  price: number;
 
   @prop()
   status: string;

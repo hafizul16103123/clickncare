@@ -39,6 +39,7 @@ import { ProductCategoryController } from './controllers/category-product.contro
 import { UploadImageController } from './controllers/image-cdn/upload-image.controller';
 import { UploadImageService } from './services/image-cdn/upload-image.service';
 import { PendingPrice } from './entities/pending.price.entity';
+import { SearchMicroServiceController } from './microservice-controllers/search.controller';
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import { PendingPrice } from './entities/pending.price.entity';
     CampaignMicroServiceController,
     ProductCategoryController,
     UploadImageController,
+    SearchMicroServiceController,
   ],
   providers: [
     ProductService,

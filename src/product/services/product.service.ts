@@ -120,11 +120,11 @@ export class ProductService {
   async updatePrice(data: PriceUpdate, z_id: string): Promise<any> {
     // data.z_id = '';
 
-    const seller = await this.redis
-      .send({ cmd: 'FIND_SELLERID_BY_Z_ID' }, '606048857bdfe933d4416af4')
-      .toPromise();
+    // const seller = await this.redis
+    //   .send({ cmd: 'FIND_SELLERID_BY_Z_ID' }, 'ZDSEL1616922757')
+    //   .toPromise();
 
-    const sellerID = seller.sellerID;
+    const sellerID = 'ZDSEL1616922757';
     const product = await this.productModel.find({
       sellerID: sellerID,
       productID: data.productID,
@@ -140,9 +140,29 @@ export class ProductService {
         status: 'pending',
       });
 
-      if (price == null) {
-        const price = await this.pendingPriceModel.create();
+      const product = await this.productModel.findOne({
+        'priceStock.globalSKU': element.globalSKU,
+      });
+
+      // price add to pendingPrice
+      if (price.length == 0) {
+        const price = await this.pendingPriceModel.create({
+          sellerID: sellerID,
+          productID: data.productID,
+          globalSKU: element.globalSKU,
+          sellerSKU: element.sellerSKU,
+          price: element.price,
+          status: 'pending',
+        });
       }
+
+      //quantity add
+      await this.productModel.findOneAndUpdate(
+        {
+          'priceStock.globalSKU': element.globalSKU,
+        },
+        { 'priceStock.quantity': element.quantity },
+      );
     }
 
     return data;
