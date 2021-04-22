@@ -55,11 +55,10 @@ export class SellerProductMicroServiceController {
   @MessagePattern({ cmd: 'SELLER_PRODUCT_COUNT' })
   async sellerProductCount(sellerID: string): Promise<any> {
     return await this.sellerProductService.sellerProductCount(sellerID);
-  
   }
 
   @MessagePattern({ cmd: 'SELLER_UPDATE_PRODUCT' })
-  async sellerUpdateProduct(data: PriceUpdate, sellerID: string): Promise<any> {
+  async sellerUpdateProduct({ data, sellerID }): Promise<any> {
     return await this.sellerProductService.updatePrice(data, sellerID);
   }
 }

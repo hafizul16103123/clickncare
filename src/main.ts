@@ -20,13 +20,13 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
   app.useGlobalPipes(new ValidationPipe());
-  // app.connectMicroservice<MicroserviceOptions>({
-  //   transport: Transport.REDIS,
-  //   options: {
-  //     url: config.redisURL,
-  //     connect_timeout: 1000,
-  //   },
-  // });
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.REDIS,
+    options: {
+      url: config.redisURL,
+      connect_timeout: 1000,
+    },
+  });
 
   await app.startAllMicroservicesAsync();
   logger.log('Connected to Redis');

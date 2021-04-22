@@ -19,9 +19,6 @@ export class SellerProductService {
   private paginate = paginate;
   private customDataPaginator = customDataPaginator;
 
-
-  
-
   async getSellerProduct(sellerID: string, pageNum: number, status: string) {
     let query;
     if (status == 'all') {
@@ -51,6 +48,7 @@ export class SellerProductService {
         id: e.productID,
         name: e.productName,
         categoryID: e.categoryId,
+        priceStock: e.priceStock,
         sold: 20,
         stock: 1,
         rating: '4.5',
@@ -175,17 +173,14 @@ export class SellerProductService {
     });
   }
 
-
   // updateProduct
   async updatePrice(data: PriceUpdate, sellerID: string): Promise<any> {
-  
     const product = await this.productModel.find({
-      sellerID: sellerID, 
-      //sellerID: 'ZDSEL1616922757',    
+      sellerID: sellerID,
       productID: data.productID,
-    });     
-  
-    if (product.length == 0){
+    });
+
+    if (product.length == 0) {
       return 'You dont have access to update this product';
     }
 
@@ -195,32 +190,30 @@ export class SellerProductService {
         globalSKU: element.globalSKU,
         status: 'pending',
       });
-      console.log(price)     
+      console.log(price);
       if (price == null) {
-         console.log(price)
-         await this.pendingPriceModel.create({
-           productID: data.productID,
-           globalSKU: element.globalSKU,
-           sellerSKU: element.sellerSKU,
-           price: element.price,
-           status: 'pending'
-         });
-      }  
-      const dataInfo = await this.productModel.findOne({productID: data.productID});            
-      const newPriceStock = dataInfo.priceStock.map(e => 
-        {
-          if(e.globalSKU === element.globalSKU) {
-            e.quantity = parseInt(element.quantity)
-          } else {
-            throw new HttpException('The globalSKU you gave does not exist under this productID', 401);
-          }
-          return e;
+        console.log(price);
+        await this.pendingPriceModel.create({
+          productID: data.productID,
+          globalSKU: element.globalSKU,
+          sellerSKU: element.sellerSKU,
+          price: element.price,
+          status: 'pending',
+        });
+      }
+      const dataInfo = await this.productModel.findOne({
+        productID: data.productID,
+      });
+      const newPriceStock = dataInfo.priceStock.map((e) => {
+        if (e.globalSKU === element.globalSKU) {
+          e.quantity = element.quantity;
         }
-      );
-      dataInfo.priceStock = newPriceStock;      
+        return e;
+      });
+      dataInfo.priceStock = newPriceStock;
       dataInfo.markModified('priceStock');
-      await dataInfo.save();  
-      return dataInfo;                                 
-    }        
+      await dataInfo.save();
+      return 'updated';
+    }
   }
 }
