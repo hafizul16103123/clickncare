@@ -1421,7 +1421,14 @@ export class SearchProductService {
   }
 
   async productStatusCount(sellerID: string): Promise<any> {
-    const statusList = ['live', 'pending', 'reject', 'stockout', 'inactive'];
+    const statusList = [
+      'all',
+      'live',
+      'pending',
+      'reject',
+      'stockout',
+      'inactive',
+    ];
     const data = Promise.all(
       statusList.map(async (e) => {
         const returnData = await this.productModel.countDocuments({
@@ -1429,10 +1436,20 @@ export class SearchProductService {
           sellerID: sellerID,
         });
 
-        return {
-          count: returnData,
-          title: `${e}`,
-        };
+        if (e == 'all') {
+          const allData = await this.productModel.countDocuments({
+            sellerID: sellerID,
+          });
+          return {
+            count: allData,
+            title: `${e}`,
+          };
+        } else {
+          return {
+            count: returnData,
+            title: `${e}`,
+          };
+        }
       }),
     );
 

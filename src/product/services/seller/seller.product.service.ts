@@ -41,7 +41,7 @@ export class SellerProductService {
       pageNum,
     );
 
-    console.log(await this.productModel.countDocuments({}).exec());
+    console.log(await this.productModel.countDocuments(query).exec());
 
     const finalProduct = product.data.map((e, index) => {
       return {
@@ -52,6 +52,7 @@ export class SellerProductService {
         sold: 20,
         stock: 1,
         rating: '4.5',
+        status: e.status,
         imageUrl: e.image[0],
         altText: e.productName,
         price: {
@@ -137,11 +138,16 @@ export class SellerProductService {
     // );
 
     const finalProduct = product.data.map((e, index) => {
+      let stock = 0;
       return {
         id: e.productID,
         name: e.productName,
         categoryID: e.categoryId,
-        sold: 20,
+        stock: e.priceStock.map((m) => {
+          stock += m.quantity;
+          return stock;
+        }),
+        priceStock: e.priceStock,
         rating: '4.5',
         imageUrl: e.image[0],
         altText: e.productName,
