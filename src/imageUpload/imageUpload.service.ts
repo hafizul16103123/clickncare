@@ -1,11 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
-
-
 import config from '../configuration';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { validate } from 'class-validator';
+import {  RpcException } from '@nestjs/microservices';
 import { extname } from 'path';
+import  * as fs from 'fs'
+
 
 @Injectable()
 export class imageUploadService {
@@ -13,25 +12,31 @@ export class imageUploadService {
 	) { }
 	public config = config;
 
+	// async uploadImage(file: Express.Multer.File,key:string ): Promise<string> {
 	async uploadImage(file: Express.Multer.File,key:string ): Promise<string> {
-	console.log({file,key})
+
 	
 		const extentions =['jpg','jpeg','png'];
 
 
 		const fileExtension = file.mimetype.split("/")[1];
 		if(extentions.includes(fileExtension)){
-				// aws upload
+			// aws upload
 			const s3 = await new S3({
 				accessKeyId: config.awsAccessKey,
 				secretAccessKey: config.awsAccessSecret,
 
 			});
-			// const key = 'customer/profile/images/' + Date.now() + '.jpg';
+			// upload file
+			const promise = fs.readFileSync(file.path, 'base64')
+			// delete file
+			fs.unlinkSync(file.path)
+			const buffer = Buffer.from(promise, 'base64');
+
 			const params = {
 				Bucket: 'zdropcontents', // pass your bucket name
 				Key: key, // file will be saved as testBucket/contacts.csv
-				Body:file.buffer,
+				Body:buffer,
 				ContentType: file.mimetype
 			};
 
@@ -53,6 +58,15 @@ export class imageUploadService {
 	}
 
 }
+// function  base64ToArrayBuffer(base64) {
+//     var binary_string = this.window.atob(base64);
+//     var len = binary_string.length;
+//     var bytes = new Uint8Array(len);
+//     for (var i = 0; i < len; i++) {
+//         bytes[i] = binary_string.charCodeAt(i);
+//     }
+//     return bytes.buffer;
+// }
 
 export const imageFileFilter = (req, file, callback) => {
 	if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {

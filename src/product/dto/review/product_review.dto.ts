@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 export class ProductReviewDto {
   @ApiProperty()
@@ -16,6 +17,7 @@ export class ProductReviewDto {
   @ApiProperty()
   review: string;
 
-  @ApiProperty()
-  imageUrl: string;
+  @ApiProperty({type:String,example:"1"})
+	imageUrl: string[];
+
 }

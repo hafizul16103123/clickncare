@@ -1,4 +1,5 @@
 import { HttpException, Injectable, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
@@ -19,23 +20,28 @@ export class ProductReviewService {
       return await this.productReview.create(data);
     }
   }
-	async uploadImage(files): Promise<any> {
-		// const doc = await this.productReview.findOne({ _id: reviewId });
-    // console.log(doc)
-    // console.log(file)
-		// if (!doc) throw new HttpException('Customer Not found', 404);
 
-		//aws upload
-    const key = 'product/review/' + Date.now() + '.jpg';
-		const imageUrl = await this.imageUploadService.uploadImage(files,key)
-    console.log(imageUrl)
-    return imageUrl;
+	async uploadImage(files,body): Promise<any> {
+		const doc = await this.productReview.findOne({ _id: body.id });
+		if (!doc) throw new RpcException('Review Not found');
 
-		// doc.imageUrl = imageUrl;
-		// return (await doc.save()).toJSON();
-    return "ok";
+      // files.forEach(async file => {
+      
+        
+      // });
+      for (const file of files) {
+          //aws upload
+          const key = 'product/review/' + Date.now() + '.jpg';
+          const imageUrl = await this.imageUploadService.uploadImage(file,key)
+          const data :any={
+            imageUrl:imageUrl
+          }
+          doc.imageUrl.push(data.imageUrl);
+        
+      }
+     return (await doc.save()).toJSON()
+
 	}
-
 
   async getProductReview(productId: number): Promise<any | null> {
     const getProductReview = await this.productReview

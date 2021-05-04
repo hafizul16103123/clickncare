@@ -2,6 +2,8 @@ import { Body, Controller, Get, Post, Query, UploadedFile, UploadedFiles, UseInt
 import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
+import fs from 'fs';
+
 import { editFileName, imageFileFilter } from 'src/imageUpload/imageUpload.service';
 import { ProductReviewDto } from 'src/product/dto/review/product_review.dto';
 import { ProductReviewService } from 'src/product/services/review/product_review.service';
@@ -21,27 +23,40 @@ export class ProductReviewController {
   async getProductReview(@Query('productId') productId: number) {
     return await this.productReview.getProductReview(productId);
   }
+  // @Post('single-image')
+  // @UseInterceptors(
+  //   FileInterceptor('image', {
+  //     storage: diskStorage({
+  //       destination: './files',
+  //       filename: editFileName,
+  //     }),
+  //     fileFilter: imageFileFilter,
+  //   }),
+  // )
+  // async uploadedFile(@UploadedFile() file) {
+  //   console.log(file)
+  //   const response = {
+  //     originalname: file.originalname,
+  //     filename: file.filename,
+  //   };
+  //   return response;
+  // }
 
-    @Post('image-upload')
-    @ApiConsumes('multipart/form-data')
-    @ApiBody({
-  	  schema: {
-  		  type: 'object',
-  		  properties: {
-  			  file: {
-  				  type: 'string',
-  				  format: 'binary',
-  			  },
-  		  },
-  	  },
-    })
-    @UseInterceptors(FileInterceptor('file'))
+  @Post('multiple-image')
+  @UseInterceptors(
+    FilesInterceptor('image', 20, {
+      storage: diskStorage({
+        destination: './files',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
 
-    async uploadImage(@UploadedFile() files): Promise<any> {
-  	  console.log('file')
-  	  console.log(files)
-  	  return this.productReview.uploadImage(files);
-    }
+  async uploadMultipleFiles(@UploadedFiles() files,@Body() body) {
+    return await this.productReview.uploadImage(files, body);
+    
+  }
 
 
 }

@@ -1,21 +1,36 @@
-import { Prop } from '@typegoose/typegoose';
 
+import { modelOptions, prop } from "@typegoose/typegoose";
+@modelOptions({
+	schemaOptions: {
+		autoIndex: true,
+		toJSON: {
+			transform: (_, ret) => {
+				ret.id = ret._id;
+				delete ret._id;
+				delete ret.__v;
+				return ret;
+			},
+		},
+		collection: 'product-review',
+	},
+})
 export class ProductReview {
-  @Prop()
+  @prop()
   customer_id: number;
 
-  @Prop()
+  @prop()
   customer_name: string;
 
-  @Prop()
+  @prop()
   product_id: number;
 
-  @Prop()
+  @prop()
   rating: number;
 
-  @Prop()
+  @prop()
   review: string;
 
-  @Prop()
-  imageUrl: string;
+	@prop({ required: true ,example:"1" })
+	imageUrl: string[];
+
 }
