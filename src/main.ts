@@ -15,20 +15,21 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 async function bootstrap() {
   const logger = new Logger('Startup', true);
 
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-  );
+  // const app = await NestFactory.create<NestFastifyApplication>(
+  //   AppModule,
+  //   new FastifyAdapter(),
+  // );
+  const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.REDIS,
-    options: {
-      url: config.redisURL,
-      connect_timeout: 1000,
-    },
-  });
-
-  await app.startAllMicroservicesAsync();
+  // app.connectMicroservice<MicroserviceOptions>({
+  //   transport: Transport.REDIS,
+  //   options: {
+  //     url: config.redisURL,
+  //     connect_timeout: 1000,
+  //   },
+  // });
+  // await app.startAllMicroservicesAsync();
+  
   logger.log('Connected to Redis');
 
   app.startAllMicroservices();
@@ -51,13 +52,14 @@ async function bootstrap() {
   logger.log('Mapped Swagger Docs');
 
   app.enableCors();
-  await app.listen(config.port, '0.0.0.0', (err) => {
-    if (err) {
-      logger.error(err.message, err.stack, '[Fastify Startup Error]');
-      process.exit(0);
-    }
-    logger.log(`APP Started on Port ${config.port}`);
-  });
+  // await app.listen(config.port, '0.0.0.0', (err) => {
+  //   if (err) {
+  //     logger.error(err.message, err.stack, '[Fastify Startup Error]');
+  //     process.exit(0);
+  //   }
+  //   logger.log(`APP Started on Port ${config.port}`);
+  // });
+  await app.listen(2000);
 }
 
 bootstrap();

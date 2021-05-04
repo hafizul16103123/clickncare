@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
+import { imageUploadService } from 'src/imageUpload/imageUpload.service';
 import { ProductReview } from 'src/product/entities/review/product_review.entity';
 
 @Injectable()
@@ -8,6 +10,7 @@ export class ProductReviewService {
   constructor(
     @InjectModel(ProductReview)
     private readonly productReview: ReturnModelType<typeof ProductReview>,
+    private readonly imageUploadService: imageUploadService,
   ) {}
 
   async createProductReview(data: ProductReview): Promise<any> {
@@ -15,6 +18,18 @@ export class ProductReviewService {
       return await this.productReview.create(data);
     }
   }
+
+	async uploadImage(file: Express.Multer.File, customerZID: string): Promise<any> {
+		// const doc = await this.productReview.findOne({ zID: customerZID });
+		// if (!doc) throw new RpcException('Customer Not found');
+
+		// //aws upload
+		// const imageUrl = await this.imageUploadService.uploadImage(file)
+
+		// doc.image = imageUrl;
+		// return (await doc.save()).toJSON();
+    return "ok";
+	}
 
   async getProductReview(productId: number): Promise<any | null> {
     const getProductReview = await this.productReview

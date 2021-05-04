@@ -40,6 +40,7 @@ import { UploadImageController } from './controllers/image-cdn/upload-image.cont
 import { UploadImageService } from './services/image-cdn/upload-image.service';
 import { PendingPrice } from './entities/pending.price.entity';
 import { SearchMicroServiceController } from './microservice-controllers/search.controller';
+import { imageUploadService } from 'src/imageUpload/imageUpload.service';
 
 @Module({
   imports: [
@@ -95,6 +96,7 @@ import { SearchMicroServiceController } from './microservice-controllers/search.
     CampaignService,
     CategoryProductService,
     UploadImageService,
+    imageUploadService 
   ],
 })
 export class ProductModule {}

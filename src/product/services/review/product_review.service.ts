@@ -1,6 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
+import { User } from 'src/auth/user/user.decorator';
+import { imageUploadService } from 'src/imageUpload/imageUpload.service';
 import { ProductReview } from 'src/product/entities/review/product_review.entity';
 
 @Injectable()
@@ -8,6 +11,7 @@ export class ProductReviewService {
   constructor(
     @InjectModel(ProductReview)
     private readonly productReview: ReturnModelType<typeof ProductReview>,
+    private readonly imageUploadService :imageUploadService,
   ) {}
 
   async createProductReview(data: ProductReview): Promise<any> {
@@ -15,6 +19,23 @@ export class ProductReviewService {
       return await this.productReview.create(data);
     }
   }
+	async uploadImage(files): Promise<any> {
+		// const doc = await this.productReview.findOne({ _id: reviewId });
+    // console.log(doc)
+    // console.log(file)
+		// if (!doc) throw new HttpException('Customer Not found', 404);
+
+		//aws upload
+    const key = 'product/review/' + Date.now() + '.jpg';
+		const imageUrl = await this.imageUploadService.uploadImage(files,key)
+    console.log(imageUrl)
+    return imageUrl;
+
+		// doc.imageUrl = imageUrl;
+		// return (await doc.save()).toJSON();
+    return "ok";
+	}
+
 
   async getProductReview(productId: number): Promise<any | null> {
     const getProductReview = await this.productReview

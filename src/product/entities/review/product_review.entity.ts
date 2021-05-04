@@ -15,4 +15,7 @@ export class ProductReview {
 
   @Prop()
   review: string;
+
+  @Prop()
+  imageUrl: string;
 }

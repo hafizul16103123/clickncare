@@ -9,6 +9,8 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { Category } from './category/entities/category.entity';
 import { CategoryModule } from './category/category.module';
 import { RegionModule } from './region/region.module';
+import { imageUploadModule } from './imageUpload/imageUpload.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -18,9 +20,13 @@ import { RegionModule } from './region/region.module';
       useUnifiedTopology: true,
       useNewUrlParser: true,
     }),
+    MulterModule.register({
+      dest: './files',
+    }),
     ProductModule,
     CategoryModule,
     RegionModule,
+    imageUploadModule
   ],
   controllers: [AppController],
   providers: [

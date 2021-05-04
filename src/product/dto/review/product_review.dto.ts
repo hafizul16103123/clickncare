@@ -15,4 +15,7 @@ export class ProductReviewDto {
 
   @ApiProperty()
   review: string;
+
+  @ApiProperty()
+  imageUrl: string;
 }
